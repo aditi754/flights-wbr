@@ -730,7 +730,10 @@ function renderScorecard(s) {
 // ============================================================
 // Render: Funnel + Conv Table + Exec Summary
 // ============================================================
-function renderFunnel(rows) {
+function renderFunnel(rows, denominators) {
+  // denominators: optional { thisUserDays, lastUserDays } — if provided, end-to-end pill uses these
+  // (matching the headline "Booking conversion" definition: bookings ÷ aggregate user-days).
+  // Falls back to step 1 unique users if user-days aren't available.
   rows = rows.slice().sort(function(a,b) { return a.sort - b.sort; });
   const host = document.getElementById("funnelHost");
   if (!host || !rows.length) return;
@@ -775,8 +778,12 @@ function renderFunnel(rows) {
     if (isFirst) {
       pillHTML = `<span class="step-conv-pill"><span class="label-small">enter</span>100%</span>`;
     } else if (isFinal) {
-      const endToEnd = (r.this_users / step1This) * 100;
-      pillHTML = `<span class="step-conv-pill"><span class="label-small">end-to-end</span>${endToEnd.toFixed(2)}%</span>`;
+      // End-to-end uses aggregate user-days (matches headline "Booking conversion" = bookings ÷ user-days).
+      // If user-days aren't available, fall back to step 1 unique users so the pill still renders.
+      const denom = (denominators && denominators.thisUserDays) ? denominators.thisUserDays : step1This;
+      const endToEnd = (r.this_users / denom) * 100;
+      const label = (denominators && denominators.thisUserDays) ? "end-to-end · bookings/user-days" : "end-to-end · bookings/uSearch";
+      pillHTML = `<span class="step-conv-pill"><span class="label-small">${label}</span>${endToEnd.toFixed(2)}%</span>`;
     }
 
     // When last_users is 0/absent, hide the second bar row and WoW footer (no-comparison view).
@@ -1012,7 +1019,7 @@ function renderFeatures(features) {
 // Initial render from snapshot
 // ============================================================
 renderScorecard(SNAPSHOT.scorecard);
-const initialBigMove = renderFunnel(SNAPSHOT.funnel);
+const initialBigMove = renderFunnel(SNAPSHOT.funnel, { thisUserDays: SNAPSHOT.scorecard.this_user_days, lastUserDays: SNAPSHOT.scorecard.last_user_days });
 renderExecSummary(SNAPSHOT.scorecard, initialBigMove);
 renderFeatures(FEATURES);
 
@@ -1277,7 +1284,7 @@ renderFeatures(FEATURES);
             last_users: (Number(row.last_users) || 0) + (isSuccess ? uniLastUbook : 0)
           };
         });
-        bigMove = renderFunnel(funnel);
+        bigMove = renderFunnel(funnel, { thisUserDays: scorecard.this_user_days, lastUserDays: scorecard.last_user_days });
       }
 
       // 3. Exec summary
