@@ -270,7 +270,7 @@ code { background: #f1f3f8; padding: 1px 5px; border-radius: 4px; font-size: 11.
   <div class="page-head">
     <h1>Flights · Weekly Business Review</h1>
     <div class="sub">Rolling 7 days vs previous 7 days · PostHog project Zolve / Default</div>
-    <div class="status-banner ok" id="statusBanner">Snapshot 10 Jul 2026 17:30 IST. Window: <strong>Fri 3 Jul 17:30 IST → Fri 10 Jul 17:30 IST</strong> vs Fri 26 Jun 17:30 → Fri 3 Jul 17:30 IST. ✓ All sources live (Satori cross-org + UNI, PostHog, Linear).</div>
+    <div class="status-banner warn" id="statusBanner">Snapshot 10 Jul 2026 17:00 IST. Window: <strong>Fri 3 Jul 17:00 IST → Fri 10 Jul 17:00 IST</strong> vs Fri 26 Jun 17:00 → Fri 3 Jul 17:00 IST. ⚠ PostHog disconnected this run — searches, unique searchers, aggregate user-days, funnel steps 1–6 and Kiwi bookings are unavailable (shown as —). Satori bookings/bookers (6 orgs) + Linear pipeline are live.</div>
     <details id="wbrDebug" style="margin: 8px 14px 0; font-size: 11px; color: var(--ink-3);">
       <summary style="cursor:pointer; user-select:none;">Debug · MCP runtime check</summary>
       <pre id="wbrDebugLog" style="margin: 8px 0 0; padding: 10px 12px; background:#0f172a; color:#e2e8f0; border-radius: 6px; max-height: 320px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-family: ui-monospace, Menlo, monospace; font-size: 11px; line-height: 1.45;">(waiting for diagnostics…)</pre>
@@ -428,26 +428,27 @@ code { background: #f1f3f8; padding: 1px 5px; border-radius: 4px; font-size: 11.
 // SNAPSHOT DATA — used on first paint. Refresh overwrites it.
 // ============================================================
 const SNAPSHOT = {
-  generatedAt: "10 Jul 2026 17:30 IST",
-  // Window: This wk = Fri 3 Jul 17:30 IST → Fri 10 Jul 17:30 IST. Last wk = Fri 26 Jun 17:30 IST → Fri 3 Jul 17:30 IST.
+  generatedAt: "10 Jul 2026 17:00 IST",
+  // Window: This wk = Fri 3 Jul 17:00 IST → Fri 10 Jul 17:00 IST. Last wk = Fri 26 Jun 17:00 IST → Fri 3 Jul 17:00 IST.
   // Coverage: 7 orgs (Niyo, Jupiter, UNI, OneCard, Cheq, Credilio/Novio, Kiwi).
-  // Bookings = Satori (6 orgs, exact) + PostHog Kiwi PayConfirm_Success events (1 this wk / 8 last wk).
+  // PostHog DISCONNECTED this run → searches/usearch/user_days/funnel steps 1-6 = 0 (renderer shows —). Kiwi bookings (PostHog-only) also unavailable → 0.
+  // Bookings = Satori only this run (6 orgs, exact). This wk 1,331 · Last wk 1,538. Bookers: this 1,183 · last 1,371.
   scorecard: {
-    this_searches:  41121, last_searches:  46980,   // PostHog Home_Search events
-    this_usearch:   21251, last_usearch:   24159,   // Unique searchers over the week
-    this_user_days: 24889, last_user_days: 28382,   // Aggregate daily-unique searchers
-    this_book:       1299, last_book:       1544,   // Satori 1,298 + Kiwi PostHog 1 · Last: Satori 1,536 + Kiwi 8
-    this_ubook:      1152, last_ubook:      1375    // Satori 1,151 + Kiwi 1 · Last: Satori 1,369 + Kiwi 6
+    this_searches:      0, last_searches:      0,   // PostHog Home_Search events — PostHog disconnected
+    this_usearch:       0, last_usearch:       0,   // Unique searchers — PostHog disconnected
+    this_user_days:     0, last_user_days:     0,   // Aggregate daily-unique searchers — PostHog disconnected
+    this_book:       1331, last_book:       1538,   // Satori 1,331 + Kiwi 0 (PostHog down) · Last: Satori 1,538 + Kiwi 0
+    this_ubook:      1183, last_ubook:       1371   // Satori 1,183 + Kiwi 0 · Last: Satori 1,371 + Kiwi 0
   },
   funnel: [
-    { step: "Home_Search",        sort: 1, this_users: 21251, last_users: 24159 },
-    { step: "SRP_LoadResult",     sort: 2, this_users: 21370, last_users: 24224 },
-    { step: "SRP_FlightSelect",   sort: 3, this_users: 11169, last_users: 12793 },
-    { step: "SRP_FlightConfirm",  sort: 4, this_users: 11013, last_users: 12720 },
-    { step: "Confirm_Continue",   sort: 5, this_users:  4235, last_users:  4985 },
-    { step: "PayConfirm_Pay",     sort: 6, this_users:  2517, last_users:  2994 },
-    // Step 7 = Satori total bookings + Kiwi PostHog events (source-of-truth booking count)
-    { step: "PayConfirm_Success", sort: 7, this_users:  1299, last_users:  1544 }
+    { step: "Home_Search",        sort: 1, this_users:     0, last_users:     0 },
+    { step: "SRP_LoadResult",     sort: 2, this_users:     0, last_users:     0 },
+    { step: "SRP_FlightSelect",   sort: 3, this_users:     0, last_users:     0 },
+    { step: "SRP_FlightConfirm",  sort: 4, this_users:     0, last_users:     0 },
+    { step: "Confirm_Continue",   sort: 5, this_users:     0, last_users:     0 },
+    { step: "PayConfirm_Pay",     sort: 6, this_users:     0, last_users:     0 },
+    // Step 7 = Satori total bookings + Kiwi PostHog events (source-of-truth booking count). Kiwi = 0 (PostHog down).
+    { step: "PayConfirm_Success", sort: 7, this_users:  1331, last_users:  1538 }
   ]
 };
 
@@ -491,7 +492,7 @@ const FEATURES = [
   // ===== To be deployed =====
   // (empty)
 
-  // ===== Shipped to prod (Done) — since Fri 3 Jul 17:30 IST, most recent first =====
+  // ===== Shipped to prod (Done) — since Fri 3 Jul 17:00 IST, most recent first =====
   { lid: "FLI2-311", title: "Niyo: frontend infra migration to OA (deployment-time reduction + caching)",       status: "Done",            date: "10 Jul 12:15",  dev: "Vishal",        kinds: ["techdebt","frontend"], url: "https://linear.app/onarrival/issue/FLI2-311/niyo-frontend-infra-migration-to-oa" },
   { lid: "FLI2-310", title: "Code splitting + lazy loading — eager JS payload down 42% (577→336 kB gz)",        status: "Done",            date: "10 Jul 12:14",  dev: "Vishal",        kinds: ["perf","frontend"], url: "https://linear.app/onarrival/issue/FLI2-310/code-splitting" },
   { lid: "FLI2-252", title: "Hide Effective Price for 'fly free' fares when coins enabled",                     status: "Done",            date: "10 Jul 11:57",  dev: "Suvidh",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-252/effective-price-should-be-hidden-for-fly-free-fares-when-coins-are" },
