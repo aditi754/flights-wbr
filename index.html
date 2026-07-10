@@ -1343,9 +1343,11 @@ renderFeatures(FEATURES);
     dbg("UA: " + navigator.userAgent.slice(0, 100));
     dbg("window.cowork present? " + (!!window.cowork));
     if (!window.cowork) {
-      dbg("⚠ window.cowork is undefined. This file must be opened via the Cowork Artifacts panel — file:// or standalone browser won't have the runtime.");
-      const b = document.getElementById("statusBanner");
-      if (b) { b.textContent = "⚠ Refresh disabled — window.cowork not available (open via Cowork Artifacts panel, not the .html file)."; b.classList.add("warn"); }
+      dbg("Public view detected (window.cowork undefined). Hiding refresh button.");
+      // Hide the refresh button entirely — clicking it can't do anything without the Cowork MCP runtime.
+      const btn = document.getElementById("refreshBtn");
+      if (btn) btn.style.display = "none";
+      // Leave the status banner text as-is (it already reflects the last refresh timestamp baked in at push time).
       return;
     }
     dbg("callMcpTool present? " + (typeof window.cowork.callMcpTool === "function"));
