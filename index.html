@@ -270,7 +270,7 @@ code { background: #f1f3f8; padding: 1px 5px; border-radius: 4px; font-size: 11.
   <div class="page-head">
     <h1>Flights · Weekly Business Review</h1>
     <div class="sub">Rolling 7 days vs previous 7 days · PostHog project Zolve / Default</div>
-    <div class="status-banner warn" id="statusBanner">Snapshot 10 Jul 2026 17:00 IST. Window: <strong>Fri 3 Jul 17:00 IST → Fri 10 Jul 17:00 IST</strong> vs Fri 26 Jun 17:00 → Fri 3 Jul 17:00 IST. ⚠ PostHog disconnected this run — searches, unique searchers, aggregate user-days, funnel steps 1–6 and Kiwi bookings are unavailable (shown as —). Satori bookings/bookers (6 orgs) + Linear pipeline are live.</div>
+    <div class="status-banner ok" id="statusBanner">Snapshot 10 Jul 2026 17:00 IST. Window: <strong>Fri 3 Jul 17:00 IST → Fri 10 Jul 17:00 IST</strong> vs Fri 26 Jun 17:00 → Fri 3 Jul 17:00 IST. ✓ All sources live (PostHog, Satori cross-org + UNI, Linear).</div>
     <details id="wbrDebug" style="margin: 8px 14px 0; font-size: 11px; color: var(--ink-3);">
       <summary style="cursor:pointer; user-select:none;">Debug · MCP runtime check</summary>
       <pre id="wbrDebugLog" style="margin: 8px 0 0; padding: 10px 12px; background:#0f172a; color:#e2e8f0; border-radius: 6px; max-height: 320px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-family: ui-monospace, Menlo, monospace; font-size: 11px; line-height: 1.45;">(waiting for diagnostics…)</pre>
@@ -431,24 +431,23 @@ const SNAPSHOT = {
   generatedAt: "10 Jul 2026 17:00 IST",
   // Window: This wk = Fri 3 Jul 17:00 IST → Fri 10 Jul 17:00 IST. Last wk = Fri 26 Jun 17:00 IST → Fri 3 Jul 17:00 IST.
   // Coverage: 7 orgs (Niyo, Jupiter, UNI, OneCard, Cheq, Credilio/Novio, Kiwi).
-  // PostHog DISCONNECTED this run → searches/usearch/user_days/funnel steps 1-6 = 0 (renderer shows —). Kiwi bookings (PostHog-only) also unavailable → 0.
-  // Bookings = Satori only this run (6 orgs, exact). This wk 1,331 · Last wk 1,538. Bookers: this 1,183 · last 1,371.
+  // All sources live: PostHog + Satori (6 orgs) + Kiwi PostHog fallback + Linear.
   scorecard: {
-    this_searches:      0, last_searches:      0,   // PostHog Home_Search events — PostHog disconnected
-    this_usearch:       0, last_usearch:       0,   // Unique searchers — PostHog disconnected
-    this_user_days:     0, last_user_days:     0,   // Aggregate daily-unique searchers — PostHog disconnected
-    this_book:       1331, last_book:       1538,   // Satori 1,331 + Kiwi 0 (PostHog down) · Last: Satori 1,538 + Kiwi 0
-    this_ubook:      1183, last_ubook:       1371   // Satori 1,183 + Kiwi 0 · Last: Satori 1,371 + Kiwi 0
+    this_searches:  42346, last_searches:  47001,   // PostHog Home_Search events (7 orgs)
+    this_usearch:   21785, last_usearch:   24180,   // Unique searchers
+    this_user_days: 25598, last_user_days: 28397,   // Aggregate daily-unique searchers
+    this_book:       1332, last_book:       1546,   // Satori 1,331 + Kiwi PostHog 1 · Last: Satori 1,538 + Kiwi 8
+    this_ubook:      1184, last_ubook:      1377    // Satori 1,183 + Kiwi 1 · Last: Satori 1,371 + Kiwi 6
   },
   funnel: [
-    { step: "Home_Search",        sort: 1, this_users:     0, last_users:     0 },
-    { step: "SRP_LoadResult",     sort: 2, this_users:     0, last_users:     0 },
-    { step: "SRP_FlightSelect",   sort: 3, this_users:     0, last_users:     0 },
-    { step: "SRP_FlightConfirm",  sort: 4, this_users:     0, last_users:     0 },
-    { step: "Confirm_Continue",   sort: 5, this_users:     0, last_users:     0 },
-    { step: "PayConfirm_Pay",     sort: 6, this_users:     0, last_users:     0 },
-    // Step 7 = Satori total bookings + Kiwi PostHog events (source-of-truth booking count). Kiwi = 0 (PostHog down).
-    { step: "PayConfirm_Success", sort: 7, this_users:  1331, last_users:  1538 }
+    { step: "Home_Search",        sort: 1, this_users: 21785, last_users: 24180 },
+    { step: "SRP_LoadResult",     sort: 2, this_users: 21906, last_users: 24243 },
+    { step: "SRP_FlightSelect",   sort: 3, this_users: 11473, last_users: 12805 },
+    { step: "SRP_FlightConfirm",  sort: 4, this_users: 11307, last_users: 12734 },
+    { step: "Confirm_Continue",   sort: 5, this_users:  4364, last_users:  4992 },
+    { step: "PayConfirm_Pay",     sort: 6, this_users:  2595, last_users:  2998 },
+    // Step 7 = Satori total bookings + Kiwi PostHog events (source-of-truth booking count).
+    { step: "PayConfirm_Success", sort: 7, this_users:  1332, last_users:  1546 }
   ]
 };
 
