@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Flights · Weekly Business Review</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --ink-3: #64748b;
+  --line: #e2e8f0;
+  --line-soft: #eef0f4;
+  --brand: #4338ca;
+  --brand-2: #6366f1;
+  --brand-3: #7c3aed;
+  --up: #047857;
+  --up-bg: #d1fae5;
+  --down: #b91c1c;
+  --down-bg: #fee2e2;
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --flat: #475569;
+  --flat-bg: #eef0f4;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: transparent;
+  line-height: 1.55;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.topnav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 22px;
+}
+.topnav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.topnav .brand { font-size: 13.5px; font-weight: 700; color: var(--ink); letter-spacing: -0.005em; }
+.topnav .brand .dot { color: var(--brand); margin: 0 6px; }
+.topnav nav { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+.topnav nav a {
+  text-decoration: none; color: var(--ink-2); font-size: 12.5px; font-weight: 500;
+  padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
+}
+.topnav nav a:hover { background: var(--line-soft); color: var(--ink); }
+.topnav #refreshBtn {
+  background: var(--brand); color:#fff; border: 0; border-radius: 7px;
+  padding: 7px 13px; font-size: 12px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 1px 2px rgba(67,56,202,.2);
+}
+.topnav #refreshBtn:hover { background: #3730a3; }
+.topnav #refreshBtn:disabled { opacity: 0.6; cursor: progress; }
+
+.wrap { padding: 24px 24px 48px; max-width: 1200px; margin: 0 auto; }
+.page-head { margin: 6px 0 18px; }
+h1 { font-size: 28px; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+.sub { color: var(--ink-3); font-size: 13px; }
+.status-banner {
+  background: #f1f5f9; border: 1px solid var(--line); color: var(--ink-2);
+  padding: 8px 14px; border-radius: 8px; font-size: 12px; margin: 14px 0 0;
+}
+.status-banner.ok { background: #ecfdf5; border-color: #bbf7d0; color: var(--up); }
+.status-banner.warn { background: #fffbeb; border-color: #fde68a; color: var(--warn); }
+.status-banner.err { background: #fef2f2; border-color: #fecaca; color: var(--down); }
+
+.exec {
+  margin-top: 18px;
+  background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%);
+  border: 1px solid #c7d2fe; border-radius: 14px;
+  padding: 18px 22px;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.exec .badge {
+  background: var(--brand); color: #fff;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.exec .body { flex: 1; }
+.exec .lead {
+  font-size: 17px; font-weight: 650; color: var(--ink);
+  line-height: 1.45; letter-spacing: -0.005em;
+}
+.exec .lead .hi { font-weight: 700; }
+.exec .lead .hi.up { color: var(--up); }
+.exec .lead .hi.down { color: var(--down); }
+.exec .lead .hi.flat { color: var(--ink-2); }
+.exec .detail { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+
+.section { margin-top: 36px; scroll-margin-top: 72px; }
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+}
+.section-head h2 {
+  font-size: 15px; margin: 0; font-weight: 700; color: var(--ink);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.section-head .step-of { font-size: 11.5px; color: var(--ink-3); font-weight: 500; }
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 900px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+.card .label { font-size: 11px; text-transform: uppercase; color: var(--ink-3); letter-spacing: 0.06em; font-weight: 600; }
+.card .value { font-size: 34px; font-weight: 700; margin-top: 8px; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.05; letter-spacing: -0.01em; }
+.card .compare {
+  margin-top: 12px; display:flex; justify-content:space-between; align-items: center; gap: 8px;
+  border-top: 1px solid var(--line-soft); padding-top: 10px;
+}
+.card .compare .lwlabel { font-size: 11.5px; color: var(--ink-3); }
+.card .compare .lwval { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; font-weight: 600; }
+.delta { display:inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.delta.up { background: var(--up-bg); color: var(--up); }
+.delta.down { background: var(--down-bg); color: var(--down); }
+.delta.flat { background: var(--flat-bg); color: var(--flat); }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+}
+.panel-title { font-size: 14px; font-weight: 650; margin: 0 0 14px; color: var(--ink); }
+.panel-sub { font-size: 12px; color: var(--ink-3); margin: -8px 0 14px; }
+.row-funnel { display: grid; gap: 16px; grid-template-columns: 1.4fr 1fr; }
+@media (max-width: 980px) { .row-funnel { grid-template-columns: 1fr; } }
+
+.funnel-wrap { display: flex; flex-direction: column; gap: 0; }
+.fstep { background: #fbfbfd; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.fstep.final { border-color:#a7f3d0; background: linear-gradient(180deg, #ecfdf5, #fbfbfd); }
+.fstep .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.fstep .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; flex-shrink: 0; }
+.fstep.final .step-num { background: var(--up); }
+.fstep .step-name { font-weight: 650; font-size: 13.5px; color: var(--ink); flex: 1; font-family: ui-monospace, "SF Mono", monospace; }
+.fstep .step-conv-pill { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #eef2ff; color: var(--brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fstep.final .step-conv-pill { background: var(--up-bg); color: var(--up); }
+.fstep .step-conv-pill .label-small { color: var(--ink-3); font-weight: 500; margin-right: 4px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.03em; }
+.fstep.final .step-conv-pill .label-small { color: #065f46; }
+.fstep .bar-row { display: grid; grid-template-columns: 58px 1fr 78px; gap: 10px; align-items: center; padding: 3px 0; }
+.fstep .bar-label { font-size: 10.5px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.fstep .bar-track { height: 18px; background: #f1f3f8; border-radius: 5px; position: relative; overflow: hidden; }
+.fstep .bar-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+.fstep .bar-fill.this { background: linear-gradient(90deg, var(--brand-2), var(--brand-3)); }
+.fstep.final .bar-fill.this { background: linear-gradient(90deg, var(--up), #10b981); }
+.fstep .bar-fill.last { background: #cbd5e1; }
+.fstep .bar-count { font-size: 12px; font-weight: 600; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.fstep .step-foot { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 8px; font-size: 11.5px; color: var(--ink-3); }
+.fstep .step-foot .lbl { font-size: 11px; color: var(--ink-3); }
+.fdrop { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 38px; margin: 0; font-size: 11.5px; color: var(--ink-3); position: relative; }
+.fdrop::before { content: ""; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: var(--line); }
+.fdrop .arrow { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: #f1f5f9; color: var(--ink-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 1px solid var(--line); z-index: 1; }
+.fdrop .drop-text { color: var(--ink); font-weight: 500; }
+.fdrop .drop-count { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fdrop .conv-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #f1f5f9; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.fdrop .conv-badge.danger { background: var(--down-bg); color: var(--down); }
+.fdrop .conv-badge.healthy { background: var(--up-bg); color: var(--up); }
+.fdrop .wow-mini { font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; margin-left: auto; }
+.fdrop .wow-mini.up { background: var(--up-bg); color: var(--up); }
+.fdrop .wow-mini.down { background: var(--down-bg); color: var(--down); }
+.fdrop .wow-mini.flat { background: var(--flat-bg); color: var(--flat); }
+
+table.conv, .feature-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.conv th, .conv td, .feature-table th, .feature-table td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.conv th, .feature-table th {
+  font-weight: 600; color: var(--ink-2); background: #f8fafc;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.conv td.num, .conv th.num, .feature-table td.num, .feature-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.conv tr.biggest { background: #fffbeb; }
+.conv tr.biggest td { font-weight: 600; }
+
+.feature-table .ftitle { font-weight: 600; color: var(--ink); font-size: 12.5px; }
+.feature-table .ftitle a { color: var(--ink); text-decoration: none; }
+.feature-table .ftitle a:hover { color: var(--brand); text-decoration: underline; }
+.feature-table .links { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.feature-table .links a { color: var(--brand); text-decoration: none; margin-right: 10px; }
+.feature-table .badge { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 600; margin-left: 6px; vertical-align: middle; }
+.feature-table .badge.partial { background: var(--warn-bg); color: var(--warn); }
+.feature-table .badge.feat { background: #dbeafe; color: #1d4ed8; }
+.feature-table .badge.bug { background: var(--down-bg); color: var(--down); }
+.feature-table .badge.hotfix { background: #fde2e2; color: var(--down); }
+.feature-table .badge.backend { background: #e0e7ff; color: #3730a3; }
+.feature-table .badge.frontend { background: #ccfbf1; color: #0f766e; }
+.feature-table .badge.techdebt { background: #f3e8ff; color: #6b21a8; }
+.feature-table .status-pill {
+  display:inline-flex; align-items:center; gap: 5px;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.feature-table .status-pill::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+}
+.feature-table .status-pill.done       { background: var(--up-bg);  color: var(--up); }
+.feature-table .status-pill.done::before       { background: var(--up); }
+.feature-table .status-pill.tobedeployed { background: #dbeafe; color: #1d4ed8; }
+.feature-table .status-pill.tobedeployed::before { background: #1d4ed8; }
+.feature-table .status-pill.qa         { background: var(--warn-bg); color: var(--warn); }
+.feature-table .status-pill.qa::before         { background: var(--warn); }
+.feature-table .status-pill.inreview   { background: #f3e8ff; color: #6b21a8; }
+.feature-table .status-pill.inreview::before   { background: #6b21a8; }
+.feature-table .status-pill.inprogress { background: #e0e7ff; color: #3730a3; }
+.feature-table .status-pill.inprogress::before { background: #3730a3; }
+.feature-table .dev { font-size: 12px; color: var(--ink-2); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.feature-table .dev .avatar { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--brand-2), var(--brand-3)); color: #fff; font-size: 10.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.feature-table tr.lag td { opacity: 0.78; }
+.feature-table .row-action { text-align: center; }
+.feature-table .remove-btn, .feature-table .restore-btn {
+  border: 0; cursor: pointer; padding: 4px 9px; border-radius: 6px;
+  font-size: 11px; font-weight: 600; transition: all 0.15s;
+}
+.feature-table .remove-btn {
+  background: transparent; color: var(--ink-3); font-size: 16px; line-height: 1;
+  padding: 2px 7px; border-radius: 50%;
+}
+.feature-table .remove-btn:hover { background: var(--down-bg); color: var(--down); }
+.feature-table .restore-btn { background: #eef2ff; color: var(--brand); }
+.feature-table .restore-btn:hover { background: var(--brand); color: #fff; }
+#removedPanel tr td { opacity: 0.7; }
+#removedPanel tr td .ftitle a { color: var(--ink-3); }
+
+.footer {
+  margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
+  color: var(--ink-3); font-size: 11.5px; line-height: 1.6;
+}
+.footer a { color: var(--brand); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+code { background: #f1f3f8; padding: 1px 5px; border-radius: 4px; font-size: 11.5px; font-family: ui-monospace, "SF Mono", monospace; }
+
+@media print {
+  .topnav { position: static; }
+  .topnav #refreshBtn { display: none; }
+  .panel, .card, .exec { break-inside: avoid; box-shadow: none; }
+  body { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-inner">
+    <span class="brand">Flights<span class="dot">·</span>WBR</span>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#funnel">Funnel</a>
+      <a href="#releases">Shipped to prod</a>
+    </nav>
+    <button id="refreshBtn" type="button">Refresh from PostHog</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <h1>Flights · Weekly Business Review</h1>
+    <div class="sub">Rolling 7 days vs previous 7 days · PostHog project Zolve / Default</div>
+    <div class="status-banner ok" id="statusBanner">Snapshot 10 Jul 2026 17:30 IST. Window: <strong>Fri 3 Jul 17:30 IST → Fri 10 Jul 17:30 IST</strong> vs Fri 26 Jun 17:30 → Fri 3 Jul 17:30 IST. ✓ All sources live (Satori cross-org + UNI, PostHog, Linear).</div>
+    <details id="wbrDebug" style="margin: 8px 14px 0; font-size: 11px; color: var(--ink-3);">
+      <summary style="cursor:pointer; user-select:none;">Debug · MCP runtime check</summary>
+      <pre id="wbrDebugLog" style="margin: 8px 0 0; padding: 10px 12px; background:#0f172a; color:#e2e8f0; border-radius: 6px; max-height: 320px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-family: ui-monospace, Menlo, monospace; font-size: 11px; line-height: 1.45;">(waiting for diagnostics…)</pre>
+    </details>
+  </div>
+
+  <div class="exec" id="overview">
+    <span class="badge">This week</span>
+    <div class="body">
+      <div class="lead" id="execLead">
+        <!-- populated by JS -->
+      </div>
+      <div class="detail" id="execDetail">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Headline metrics</h2><span class="step-of">This week vs last week</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="label">Total searches</div>
+        <div class="value" id="kpi-search">…</div>
+        <div class="compare">
+          <span class="lwlabel">vs last <span class="lwval" id="kpi-search-last">…</span></span>
+          <span class="delta flat" id="kpi-search-delta">…</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Unique searchers</div>
+        <div class="value" id="kpi-usearch">…</div>
+        <div class="compare">
+          <span class="lwlabel">vs last <span class="lwval" id="kpi-usearch-last">…</span></span>
+          <span class="delta flat" id="kpi-usearch-delta">…</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Aggregate user-days <span style="font-size:9.5px; color: var(--ink-3); font-weight:500; background: var(--line-soft); padding: 1px 6px; border-radius:6px; margin-left:4px; letter-spacing:0;">daily-unique · summed</span></div>
+        <div class="value" id="kpi-userdays">…</div>
+        <div class="compare">
+          <span class="lwlabel">vs last <span class="lwval" id="kpi-userdays-last">…</span></span>
+          <span class="delta flat" id="kpi-userdays-delta">…</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Bookings <span style="font-size:9.5px; color: var(--ink-3); font-weight:500; background: var(--line-soft); padding: 1px 6px; border-radius:6px; margin-left:4px; letter-spacing:0;">Satori · all orgs</span></div>
+        <div class="value" id="kpi-book">…</div>
+        <div class="compare">
+          <span class="lwlabel">vs last <span class="lwval" id="kpi-book-last">…</span></span>
+          <span class="delta flat" id="kpi-book-delta">…</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Booking conversion <span style="font-size:9.5px; color: var(--ink-3); font-weight:500; background: var(--line-soft); padding: 1px 6px; border-radius:6px; margin-left:4px; letter-spacing:0;">bookings ÷ user-days</span></div>
+        <div class="value" id="kpi-conv">…</div>
+        <div class="compare">
+          <span class="lwlabel">vs last <span class="lwval" id="kpi-conv-last">…</span></span>
+          <span class="delta flat" id="kpi-conv-delta">…</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11.5px; color: var(--ink-3); margin-top: 14px; padding: 10px 14px; background: #f8fafc; border-radius: 8px; line-height:1.7;">
+      <strong style="color: var(--ink-2);">Coverage · 7 orgs:</strong> Niyo Global, Jupiter, UNI, OneCard, Cheq, Credilio (= Novio in Satori), and Kiwi (Gokiwi). <br>
+      <strong style="color: var(--ink-2);">Booking source:</strong> Satori — <code>flight_orders</code> JOIN <code>payments</code> WHERE <code>status='PAYMENT_SUCCESSFUL'</code> across 6 orgs (deduplicated by order_id or userId). Kiwi has no Satori schema so its bookings (29 events / 24 unique) come from PostHog's <code>PayConfirm_Success</code> event. <br>
+      <strong style="color: var(--ink-2);">Cancellations:</strong> A cancelled booking still counts — it had a successful payment. Refunds don't reduce the booking count. This is <em>gross bookings</em>, matching how the business tracks activity, not net-of-cancellations. <br>
+      <strong style="color: var(--ink-2);">Aggregate user-days:</strong> Distinct (user, IST-day) pairs. A user who searches on 10 different days counts as 10; a user who searches 10 times in one day counts as 1. Fair gauge of repeated-visit demand. <br>
+      <strong style="color: var(--ink-2);">Booking conversion:</strong> <em>total bookings</em> ÷ <em>aggregate user-days</em>. Numerator counts every booking (repeats included); denominator counts every distinct (user, day) search visit. Interpretation: "Of every 100 search-visit-days, ~5 produced a booking." Repeat bookings and repeat visits are both credited, giving a session-level yield rather than a pure people-through-the-funnel percentage.
+    </div>
+  </div>
+
+  <div class="section" id="funnel">
+    <div class="section-head"><h2>Drill-down funnel</h2><span class="step-of">Unique users · this week vs last week</span></div>
+    <div class="row-funnel">
+      <div class="panel">
+        <div class="panel-title">Funnel breakdown</div>
+        <div class="panel-sub">Bar widths normalized to the funnel's peak. Each step shows users this week vs last week; connectors between steps show step-conversion (what % of the prior step made it to this one) and how that step-conversion changed WoW. <span style="display:inline-block; margin-top:6px; padding: 4px 8px; background:#f1f5f9; border-radius:6px; color: var(--ink-3); font-size:11px;"><strong style="color:var(--ink-2);">Step 7 (PayConfirm_Success):</strong> <em>total bookings</em> from Satori (6 orgs) + PostHog Kiwi events (29). Unit differs from steps 1-6 (unique users) — one user can book multiple times, so step 7 counts orders not users. This is the source-of-truth booking volume for the period.</span></div>
+        <div class="funnel-wrap" id="funnelHost"></div>
+        <div style="margin-top:14px; padding-top: 12px; border-top: 1px solid var(--line-soft); font-size:11.5px; color: var(--ink-3);">
+          <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom: 6px;">
+            <span><span style="display:inline-block; width:14px; height:8px; background:linear-gradient(90deg,var(--brand-2),var(--brand-3)); vertical-align:middle; border-radius:3px;"></span> This week</span>
+            <span><span style="display:inline-block; width:14px; height:8px; background:#cbd5e1; vertical-align:middle; border-radius:3px;"></span> Last week</span>
+          </div>
+          <div style="display:flex; gap:18px; flex-wrap:wrap;">
+            <span><strong style="color:var(--ink-2);">In each step card:</strong> "WoW users" = % change in unique users at this step</span>
+            <span><strong style="color:var(--ink-2);">In each connector:</strong> "step conv." = % of previous step that reached this one · "WoW step-conv" = how that step-conversion moved vs last week</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Step-by-step conversion (sorted by |Δ pp|)</div>
+        <div class="panel-sub">Where step-conversion moved most this week. Δ is absolute percentage-points (pp).</div>
+        <table class="conv">
+          <thead><tr><th>Transition</th><th class="num">This wk</th><th class="num">Last wk</th><th class="num">Δ pp</th></tr></thead>
+          <tbody id="convTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="releases">
+    <div class="section-head"><h2>Shipped to prod</h2><span class="step-of" id="shippedCount">Linear · Flights Pod · since Fri 12 Jun 17:30 IST</span></div>
+    <div class="panel">
+      <div class="panel-sub" style="margin: 0 0 14px;">
+        Items moved to <strong>Done</strong> in Linear (Flights Pod team) since Friday 12 Jun 17:30 IST, plus everything currently In Review / QA / ready to deploy. Click <span style="color:var(--down); font-weight:700;">✕</span> on any row to remove it from the meeting view — removed items persist across refreshes.
+      </div>
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Developer</th>
+            <th style="width: 36px;"></th>
+          </tr>
+        </thead>
+        <tbody id="featureTable"></tbody>
+      </table>
+      <div style="font-size:11.5px; color: var(--ink-3); margin-top: 14px; padding: 10px 14px; background: #f8fafc; border-radius: 8px;">
+        <strong style="color: var(--ink-2);">Why no conversion columns:</strong> Pre/post conversion needs ~7 days post-release to be reliable (users take days to convert after first search). The funnel section above tracks live conversion.
+      </div>
+    </div>
+
+    <!-- Removed items section -->
+    <div class="panel" id="removedPanel" style="margin-top: 14px; display: none;">
+      <div class="panel-title" style="display:flex; align-items:center; gap:8px;">
+        <span>Removed from view</span>
+        <span style="font-size: 11px; font-weight: 500; color: var(--ink-3); background: var(--line-soft); padding: 2px 8px; border-radius: 999px;" id="removedCount">0</span>
+      </div>
+      <div class="panel-sub" style="margin: 0 0 14px;">Items you've hidden from the meeting view. Click <strong style="color: var(--brand);">Restore</strong> to bring an item back.</div>
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Developer</th>
+            <th style="width: 80px;"></th>
+          </tr>
+        </thead>
+        <tbody id="removedTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    Source: <a href="http://posthog-web-django.posthog.svc.cluster.local:8000/project/61454/dashboard/1639650" target="_blank">PostHog dashboard</a> · project Zolve / Default (id 61454). Feature list from Linear team "Flights Pod" (FLI2-* issues, last 14 days). Use the Refresh button to pull current numbers.
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// SNAPSHOT DATA — used on first paint. Refresh overwrites it.
+// ============================================================
+const SNAPSHOT = {
+  generatedAt: "10 Jul 2026 17:30 IST",
+  // Window: This wk = Fri 3 Jul 17:30 IST → Fri 10 Jul 17:30 IST. Last wk = Fri 26 Jun 17:30 IST → Fri 3 Jul 17:30 IST.
+  // Coverage: 7 orgs (Niyo, Jupiter, UNI, OneCard, Cheq, Credilio/Novio, Kiwi).
+  // Bookings = Satori (6 orgs, exact) + PostHog Kiwi PayConfirm_Success events (1 this wk / 8 last wk).
+  scorecard: {
+    this_searches:  41121, last_searches:  46980,   // PostHog Home_Search events
+    this_usearch:   21251, last_usearch:   24159,   // Unique searchers over the week
+    this_user_days: 24889, last_user_days: 28382,   // Aggregate daily-unique searchers
+    this_book:       1299, last_book:       1544,   // Satori 1,298 + Kiwi PostHog 1 · Last: Satori 1,536 + Kiwi 8
+    this_ubook:      1152, last_ubook:      1375    // Satori 1,151 + Kiwi 1 · Last: Satori 1,369 + Kiwi 6
+  },
+  funnel: [
+    { step: "Home_Search",        sort: 1, this_users: 21251, last_users: 24159 },
+    { step: "SRP_LoadResult",     sort: 2, this_users: 21370, last_users: 24224 },
+    { step: "SRP_FlightSelect",   sort: 3, this_users: 11169, last_users: 12793 },
+    { step: "SRP_FlightConfirm",  sort: 4, this_users: 11013, last_users: 12720 },
+    { step: "Confirm_Continue",   sort: 5, this_users:  4235, last_users:  4985 },
+    { step: "PayConfirm_Pay",     sort: 6, this_users:  2517, last_users:  2994 },
+    // Step 7 = Satori total bookings + Kiwi PostHog events (source-of-truth booking count)
+    { step: "PayConfirm_Success", sort: 7, this_users:  1299, last_users:  1544 }
+  ]
+};
+
+// Sort priority: pipeline items first (in-progress → review → QA → to-be-deployed), then shipped sorted by recency.
+// Refreshed 10 Jul 2026 for the Fri 3 Jul → Fri 10 Jul week.
+const FEATURES = [
+  // ===== In Progress =====
+  { lid: "FLI2-308", title: "Handle traveller validation errors correctly in Review and Confirm Itinerary",     status: "In Progress",     date: "since 9 Jul",   dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-308/handle-traveller-validation-errors-correctly-in-review-and-confirm" },
+  { lid: "FLI2-295", title: "Jupiter insurance: add SSE event via webhook + enable on international",           status: "In Progress",     date: "since 8 Jul",   dev: "Arjun Tejaswi", kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-295/add-a-sse-event-for-jupiter-insurance-and-enable-insurance-on" },
+  { lid: "FLI2-29",  title: "Booking ID on hub for offline bookings",                                           status: "In Progress",     date: "since 16 Jun",  dev: "Arjun Tejaswi", kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-29/booking-id-needs-to-be-added-on-hub-for-offline-bookings" },
+  { lid: "FLI2-278", title: "TBO farequote error — avoid multiple API calls in same session",                   status: "In Progress",     date: "since 29 Jun",  dev: "Avinash",       kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-278/farequote-error-issue-tbo" },
+  { lid: "FLI2-271", title: "Fare family roundtrip → domestic (Backend)",                                       status: "In Progress",     date: "since 25 Jun",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-271/fare-family-roundtrip-domestic-backend" },
+  { lid: "FLI2-98",  title: "Add fare family on AB (Aditya Birla)",                                             status: "In Progress",     date: "since 28 May",  dev: "Yogi",          kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-98/add-fare-family-on-ab" },
+  { lid: "FLI2-158", title: "Roundtrip flight selection hidden behind Search Route (Niyo prod)",                status: "In Progress",     date: "since 10 Jun",  dev: "Vishal",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-158/roundtrip-flight-selection-hidden-behind-search-route-section-on" },
+  { lid: "FLI2-35",  title: "Error bottom sheet doesn't collapse on drag-down (all orgs)",                      status: "In Progress",     date: "since 21 Apr",  dev: "Vishal",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-35/error-bottom-sheet-does-not-fully-collapse-on-drag-down-prod-all-orgs" },
+
+  // ===== In Review =====
+  { lid: "FLI2-286", title: "SpiceJet: base fare changes between fare review and price-check (CTV4)",           status: "In Review",       date: "since 10 Jul",  dev: "Arjun Tejaswi", kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-286/spicejet-base-fare-changes-between-fare-review-and-price-check-price" },
+  { lid: "FLI2-299", title: "Uni Lounge Integration (reward selection alt to Gold/EMI)",                        status: "In Review",       date: "since 9 Jul",   dev: "Arjun Tejaswi", kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-299/uni-lounge-integration" },
+  { lid: "FLI2-251", title: "Payment failed / amount debited — add live payment-status checker on Hub",         status: "In Review",       date: "since 7 Jul",   dev: "Arvind",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-251/payment-failed-amount-debited-from-cx-account-copy" },
+  { lid: "FLI2-275", title: "Niyo Calendar coin-burn toggle (before/after prices in date-picker)",              status: "In Review",       date: "since 29 Jun",  dev: "Aditi",         kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-275/niyo-calendar-coin-burn" },
+  { lid: "FLI2-78",  title: "Amadeus integration (canonical umbrella)",                                         status: "In Review",       date: "since 29 May",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-78/amadeus-integration" },
+  { lid: "FLI2-184", title: "My Trips icon overlaps iOS Dynamic Island",                                        status: "In Review",       date: "since 3 Jun",   dev: "Arjunb",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-184/my-trips-icon-overlaps-with-ios-dynamic-islandnotification-area" },
+  { lid: "FLI2-100", title: "Segregate flight-search WebClients by use case",                                   status: "In Review",       date: "since 28 May",  dev: "Anirudh",       kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-100/segregate-flight-search-webclients-by-use-case-domestic-international" },
+  { lid: "FLI2-181", title: "Introduce WebClientFactory + properties-driven config",                            status: "In Review",       date: "since 3 Jun",   dev: "Anirudh",       kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-181/introduce-webclientfactory-properties-driven-config-for-flights" },
+  { lid: "FLI2-102", title: "RN nativebridge timing out at 50s on multiple events (~27K errors)",               status: "In Review",       date: "since 1 Jun",   dev: "Arjunb",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-102/datadogposthog-react-native-nativebridge-timing-out-at-50s-on-multiple" },
+
+  // ===== QA =====
+  { lid: "FLI2-269", title: "No toast when user clicks with zero coins available (UNI)",                        status: "QA",              date: "since 10 Jul",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-269/there-is-no-toast-appearing-on-click-when-there-are-no-coins-available" },
+  { lid: "FLI2-267", title: "Net Effective Price ignores Uni Coins discount in Payment Details",                status: "QA",              date: "since 9 Jul",   dev: "Arvind",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-267/net-effective-price-ignores-uni-coins-discount-in-payment-details" },
+  { lid: "FLI2-234", title: "Missing coin-burn indicator in Savings Banner",                                    status: "QA",              date: "since 2 Jul",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-234/missing-coin-burn-indicator-in-savings-banner" },
+  { lid: "FLI2-258", title: "Coin-burn value mismatch pre-booking vs post-booking",                             status: "QA",              date: "since 2 Jul",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-258/coin-burn-value-mismatch-between-pre-booking-and-post-booking-screens" },
+  { lid: "FLI2-281", title: "SRP card: refundable tags, seats available, transit visa",                         status: "QA",              date: "since 30 Jun",  dev: "Arjunb",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-281/srp-card-enhancements-refundable-tags-seats-available-transit-visa" },
+  { lid: "FLI2-160", title: "Bottom Price Details Bar floats during scroll (UNI prod)",                         status: "QA",              date: "since 24 Jun",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-160/bottom-price-details-bar-floats-during-scroll-on-production-uni-prod" },
+  { lid: "FLI2-257", title: "Coin burn displays entire balance instead of discount amount",                     status: "QA",              date: "since 24 Jun",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-257/coin-burn-displays-entire-coin-balance-instead-of-only-the-amount" },
+  { lid: "FLI2-131", title: "UNI: cross-sell redirection from hotels into flights",                             status: "QA",              date: "since 22 Jun",  dev: "Rakshith",      kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-131/uni-redirection-for-hotels-into-flights" },
+  { lid: "FLI2-237", title: "Net effective price not updating on adding Seats/Meals/Baggage",                   status: "QA",              date: "since 18 Jun",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-237/net-effective-price-not-updating-on-adding-seats-meals-baggage" },
+  { lid: "FLI2-238", title: "Net effective price not updating on adding SMB (dup of 237)",                      status: "QA",              date: "since 18 Jun",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-238/net-effective-price-not-updating-on-adding-seats-meals-baggage" },
+  { lid: "FLI2-31",  title: "CleartripV4: non-prod mocking wrapper",                                            status: "QA",              date: "since 11 May",  dev: "Yukti",         kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-31/cleartripv4-add-non-prod-mocking-wrapper-for-v4-supplier-parity-with" },
+
+  // ===== To be deployed =====
+  // (empty)
+
+  // ===== Shipped to prod (Done) — since Fri 3 Jul 17:30 IST, most recent first =====
+  { lid: "FLI2-311", title: "Niyo: frontend infra migration to OA (deployment-time reduction + caching)",       status: "Done",            date: "10 Jul 12:15",  dev: "Vishal",        kinds: ["techdebt","frontend"], url: "https://linear.app/onarrival/issue/FLI2-311/niyo-frontend-infra-migration-to-oa" },
+  { lid: "FLI2-310", title: "Code splitting + lazy loading — eager JS payload down 42% (577→336 kB gz)",        status: "Done",            date: "10 Jul 12:14",  dev: "Vishal",        kinds: ["perf","frontend"], url: "https://linear.app/onarrival/issue/FLI2-310/code-splitting" },
+  { lid: "FLI2-252", title: "Hide Effective Price for 'fly free' fares when coins enabled",                     status: "Done",            date: "10 Jul 11:57",  dev: "Suvidh",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-252/effective-price-should-be-hidden-for-fly-free-fares-when-coins-are" },
+  { lid: "FLI2-248", title: "Per-org supplier disable via SupplierApiStatus.disabledOrganizations",             status: "Done",            date: "10 Jul 11:57",  dev: "Suvidh",        kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-248/add-per-organization-supplier-disable-via" },
+  { lid: "FLI2-228", title: "Amadeus Phase 4: promote Submit Booking (money path) to production",               status: "Done",            date: "10 Jul 11:53",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-228/phase-4-promote-amadeus-submit-booking-money-path-to-production" },
+  { lid: "FLI2-89",  title: "Amadeus Search Integration (dom/intl, single/return, PCC, fare family)",           status: "Done",            date: "10 Jul 11:53",  dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-89/amadeus-search-integration" },
+  { lid: "FLI2-227", title: "Amadeus PR #3: promote SMB (Seats/Meals/Baggage) to production",                   status: "Done",            date: "10 Jul 11:52",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-227/amadeus-rollout-pr-3-promote-smb-seats-meals-baggage-to-production" },
+  { lid: "FLI2-224", title: "Amadeus PR #0: foundation (code dark + kill-switch spine + money guards)",         status: "Done",            date: "10 Jul 11:51",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-224/amadeus-rollout-pr-0-foundation-land-code-dark-per-flow-kill-switch" },
+  { lid: "FLI2-190", title: "TBO: analysis of seat/meal mandatory (occurrence counts)",                         status: "Done",            date: "9 Jul 19:19",   dev: "Anirudh",       kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-190/tbo-analysis-of-seatmeal-mandatory" },
+  { lid: "FLI2-130", title: "Supplier switchover for not-found flights (price-check failover)",                 status: "Done",            date: "9 Jul 17:22",   dev: "Rakshith",      kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-130/supplier-switch-over-issue-for-not-found-flights" },
+  { lid: "FLI2-197", title: "New Slack alert — Order stuck in Booking in Progress state",                       status: "Done",            date: "9 Jul 15:39",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-197/new-slack-alert-order-in-booking-in-progress-state-copy" },
+  { lid: "FLI2-306", title: "CheQ prod: same non-stop flight shown multiple times with different prices",       status: "Done",            date: "9 Jul 14:30",   dev: "Anirudh",       kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-306/cheq-prod-same-non-stop-flight-shown-multiple-times-with-different" },
+  { lid: "FLI2-298", title: "Slice App Flights SDK POC (Flutter host + preloaded WebView)",                     status: "Done",            date: "9 Jul 13:23",   dev: "Arjunb",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-298/slice-app-flights-sdk-poc" },
+  { lid: "FLI2-226", title: "Amadeus PR #2: promote Itinerary + Fare-rules + Traveller to production",          status: "Done",            date: "9 Jul 11:42",   dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-226/amadeus-rollout-pr-2-promote-itinerary-fare-rules-traveller-to" },
+  { lid: "FLI2-225", title: "Amadeus PR #1: promote Search to production (intl-only, DB-flag gated)",           status: "Done",            date: "9 Jul 11:42",   dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-225/phase-1-promote-amadeus-search-to-production-intl-only-db-flag-gated" },
+  { lid: "FLI2-132", title: "Senior citizen and armed forces fare (Cleartrip)",                                 status: "Done",            date: "8 Jul 23:07",   dev: "Rakshith",      kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-132/senior-citizen-and-armed-forces-fare" },
+  { lid: "FLI2-196", title: "Incorrect Refund Summary for two-airline return cancellation",                     status: "Done",            date: "8 Jul 14:48",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-196/incorrect-refund-summary-being-displayed-copy" },
+  { lid: "FLI2-214", title: "Amadeus Search Integration (fare family, cancellation/amendment charges)",         status: "Done",            date: "8 Jul 14:48",   dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-214/amadeus-search-integration" },
+  { lid: "FLI2-171", title: "CT V4 auto-cancellation failure despite valid fare rules",                         status: "Done",            date: "8 Jul 14:46",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-171/ct-v4-auto-cancellation-failure-copy" },
+  { lid: "FLI2-170", title: "Fare Rule mismatch for Fare Family booking on CT V4",                              status: "Done",            date: "8 Jul 14:45",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-170/fare-rule-mismatch-for-fare-family-booking-on-ct-v4-copy" },
+  { lid: "FLI2-172", title: "Fare Rules for dom flights: available on CT V4 but missing on Hub",                status: "Done",            date: "8 Jul 14:45",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-172/fare-rules-for-dom-flights-available-on-ct-v4-but-unavailable-on-hub" },
+  { lid: "FLI2-176", title: "Fare Rule date-range / time-stamp inconsistency on Hub vs CT",                     status: "Done",            date: "8 Jul 14:45",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-176/fare-rule-date-range-inconsistency-copy" },
+  { lid: "FLI2-232", title: "Gold Back Rive banner update to 'No Cost EMI' on Flights Home",                    status: "Done",            date: "8 Jul 14:38",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-232/gold-back-rive-banner-not-updating-to-no-cost-emi-banner-on-flights" },
+  { lid: "FLI2-233", title: "Font weight fix for 'No Cost EMI Available' text in round-trip results",           status: "Done",            date: "8 Jul 14:38",   dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-233/incorrect-font-weight-for-no-cost-emi-available-text-in-round-trip" },
+  { lid: "FLI2-268", title: "Uni Coins refund mismatch on EMI order cancellation (IndiGo BLR→SIN)",             status: "Done",            date: "8 Jul 14:37",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-268/uni-coins-refund-mismatch-on-emi-order-cancellation-indigo-6e-1247" },
+  { lid: "FLI2-235", title: "'Something Went Wrong' toast for EMI-ineligible flights",                          status: "Done",            date: "8 Jul 14:37",   dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-235/something-went-wrong-toast-displayed-in-payment-gateway-for-flights" },
+  { lid: "FLI2-253", title: "Total Fare mismatch in Payment Details summary (EMI, no coins)",                   status: "Done",            date: "8 Jul 14:37",   dev: "Arvind",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-253/total-fare-mismatch-in-payment-details-summary-for-emi-payments-no" },
+  { lid: "FLI2-270", title: "Pay CTA amount cropped/malformed on EMI Payment Options",                          status: "Done",            date: "8 Jul 14:37",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-270/pay-cta-amount-croppedmalformed-on-emi-payment-options-pay-indian" },
+  { lid: "FLI2-239", title: "Missing UI for EMI Opted Status after GoldX flight booking",                       status: "Done",            date: "8 Jul 14:37",   dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-239/missing-ui-for-emi-opted-status-after-flight-booking-using-goldx-card" },
+  { lid: "FLI2-255", title: "EMI Details: line items + instalment plan reconcile to Total Payable",             status: "Done",            date: "8 Jul 14:36",   dev: "Arvind",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-255/emi-details-line-items-and-instalment-plan-dont-reconcile-to-total" },
+  { lid: "FLI2-83",  title: "Uni EMI and coin burn (umbrella)",                                                 status: "Done",            date: "8 Jul 14:35",   dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-83/uni-emi-and-coin-burn" },
+  { lid: "FLI2-3",   title: "Uni Coin Burn (UniCards coin-burn discount during booking) — feature GA",          status: "Done",            date: "7 Jul 23:09",   dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-3/uni-coin-burn" },
+  { lid: "FLI2-6",   title: "Uni EMI eticket and invoice changes",                                              status: "Done",            date: "7 Jul 22:48",   dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-6/uni-emi-eticket-and-invoice-changes" },
+  { lid: "FLI2-220", title: "Fare family Cheq: tags via userprofile API (CHEQ_FARE_FAMILY_ENABLED)",            status: "Done",            date: "6 Jul 15:54",   dev: "Anirudh",       kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-220/fare-family-cheq-tags-via-userprofile-api" },
+  { lid: "FLI2-122", title: "Fare family — Cheq (frontend)",                                                    status: "Done",            date: "6 Jul 11:34",   dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-122/fare-family-cheq" }
+];
+
+const TS_MAP = {
+  "FLI2-311":"2026-07-10 06:45:17", "FLI2-310":"2026-07-10 06:44:24",
+  "FLI2-252":"2026-07-10 06:27:29", "FLI2-248":"2026-07-10 06:27:12", "FLI2-228":"2026-07-10 06:23:52",
+  "FLI2-89":"2026-07-10 06:23:20",  "FLI2-227":"2026-07-10 06:22:18", "FLI2-224":"2026-07-10 06:21:08",
+  "FLI2-190":"2026-07-09 13:49:42", "FLI2-130":"2026-07-09 11:52:09", "FLI2-197":"2026-07-09 10:09:39",
+  "FLI2-306":"2026-07-09 09:00:49", "FLI2-298":"2026-07-09 07:53:26", "FLI2-226":"2026-07-09 06:12:39",
+  "FLI2-225":"2026-07-09 06:12:29", "FLI2-132":"2026-07-08 17:37:10", "FLI2-196":"2026-07-08 09:18:38",
+  "FLI2-214":"2026-07-08 09:18:04", "FLI2-171":"2026-07-08 09:16:09", "FLI2-170":"2026-07-08 09:15:57",
+  "FLI2-172":"2026-07-08 09:15:46", "FLI2-176":"2026-07-08 09:15:32", "FLI2-232":"2026-07-08 09:08:48",
+  "FLI2-233":"2026-07-08 09:08:26", "FLI2-268":"2026-07-08 09:07:49", "FLI2-235":"2026-07-08 09:07:40",
+  "FLI2-253":"2026-07-08 09:07:33", "FLI2-270":"2026-07-08 09:07:26", "FLI2-239":"2026-07-08 09:07:17",
+  "FLI2-255":"2026-07-08 09:06:58", "FLI2-83":"2026-07-08 09:05:44",  "FLI2-3":"2026-07-07 17:39:03",
+  "FLI2-6":"2026-07-07 17:18:53",   "FLI2-220":"2026-07-06 10:24:29", "FLI2-122":"2026-07-06 06:04:16"
+};
+
+// LEGACY_MARKER_START — old FEATURES/TS_MAP arrays follow below; retained but shadowed by the fresh arrays above.
+const _LEGACY_FEATURES_UNUSED = [
+  // ===== In Progress (old, unused) =====
+  { lid: "FLI2-251", title: "Payment failed: amount debited from CX account (intermittent state mismatch)",     status: "In Progress",     date: "since 26 Jun",  dev: "Arjun Tejaswi", kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-251/payment-failed-amount-debited-from-cx-account-copy" },
+  { lid: "FLI2-271", title: "Fare family roundtrip → domestic (Backend) — counterpart to FLI2-219",             status: "In Progress",     date: "since 25 Jun",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-271/fare-family-roundtrip-domestic-backend" },
+  { lid: "FLI2-132", title: "Senior citizen and armed forces fare",                                             status: "In Progress",     date: "since 24 Jun",  dev: "Yogi",          kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-132/senior-citizen-and-armed-forces-fare" },
+  { lid: "FLI2-228", title: "Amadeus Phase 4: promote Submit Booking (money path) to production",              status: "In Progress",     date: "since 24 Jun",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-228/phase-4-promote-amadeus-submit-booking-money-path-to-production" },
+  { lid: "FLI2-250", title: "Nationality: implement on CT (mandatory field collection)",                        status: "In Progress",     date: "since 24 Jun",  dev: "Anirudh",       kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-250/nationality-implement-on-ct" },
+  { lid: "FLI2-226", title: "Amadeus PR #2: promote Itinerary + Fare-rules + Traveller to production",          status: "In Progress",     date: "since 23 Jun",  dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-226/amadeus-rollout-pr-2-promote-itinerary-fare-rules-traveller-to" },
+  { lid: "FLI2-225", title: "Amadeus PR #1: promote Search to production (intl-only, DB-flag gated)",           status: "In Progress",     date: "since 22 Jun",  dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-225/phase-1-promote-amadeus-search-to-production-intl-only-db-flag-gated" },
+  { lid: "FLI2-248", title: "Per-org supplier disable via SupplierApiStatus.disabledOrganizations",             status: "In Progress",     date: "since 22 Jun",  dev: "Suvidh",        kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-248/add-per-organization-supplier-disable-via" },
+  { lid: "FLI2-223", title: "Cheq: corporate fare (same flow as Niyo corp fare)",                               status: "In Progress",     date: "since 22 Jun",  dev: "Arjun Tejaswi", kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-223/cheq-corporate-fare" },
+  { lid: "FLI2-227", title: "Amadeus PR #3: promote SMB (seats / meals / baggage) to production",               status: "In Progress",     date: "since 18 Jun",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-227/amadeus-rollout-pr-3-promote-smb-seats-meals-baggage-to-production" },
+  { lid: "FLI2-224", title: "Amadeus PR #0: foundation — land code dark + kill-switch spine + money guards",    status: "In Progress",     date: "since 18 Jun",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-224/amadeus-rollout-pr-0-foundation-land-code-dark-per-flow-kill-switch" },
+  { lid: "FLI2-98",  title: "Add fare family on AB (Aditya Birla) — gokiwi/cheq/credilio done, AB pending",     status: "In Progress",     date: "since 28 May",  dev: "Yogi",          kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-98/add-fare-family-on-ab" },
+  { lid: "FLI2-122", title: "Fare family — Cheq",                                                               status: "In Progress",     date: "since 28 May",  dev: "Yogi",          kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-122/fare-family-cheq" },
+  { lid: "FLI2-158", title: "Roundtrip flight selection hidden behind Search Route section (Niyo prod)",        status: "In Progress",     date: "since 10 Jun",  dev: "Vishal",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-158/roundtrip-flight-selection-hidden-behind-search-route-section-on" },
+  { lid: "FLI2-170", title: "Fare Rule mismatch for Fare Family booking on CT V4",                              status: "In Progress",     date: "since 5 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-170/fare-rule-mismatch-for-fare-family-booking-on-ct-v4-copy" },
+  { lid: "FLI2-171", title: "CT V4 auto-cancellation failure despite valid fare rules",                         status: "In Progress",     date: "since 5 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-171/ct-v4-auto-cancellation-failure-copy" },
+  { lid: "FLI2-172", title: "Fare Rules for dom flights: available on CT V4 but missing on Hub",                status: "In Progress",     date: "since 5 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-172/fare-rules-for-dom-flights-available-on-ct-v4-but-unavailable-on-hub" },
+  { lid: "FLI2-176", title: "Fare Rule date-range / time-stamp inconsistency on Hub vs CT",                     status: "In Progress",     date: "since 4 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-176/fare-rule-date-range-inconsistency-copy" },
+  { lid: "FLI2-143", title: "[ARCH LOW] doSearchFlights swallows all exceptions inline",                        status: "In Progress",     date: "since 1 Jun",   dev: "Suvidh",        kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-143/arch-low-dosearchflights-swallows-all-exceptions-inline-bypassing-the" },
+  { lid: "FLI2-35",  title: "Error bottom sheet doesn't fully collapse on drag-down (all orgs prod)",           status: "In Progress",     date: "since 21 Apr",  dev: "Vishal",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-35/error-bottom-sheet-does-not-fully-collapse-on-drag-down-prod-all-orgs" },
+
+  // ===== In Review =====
+  { lid: "FLI2-190", title: "TBO: analysis of seat/meal mandatory (occurrence counts)",                         status: "In Review",       date: "since 16 Jun",  dev: "Anirudh",       kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-190/tbo-analysis-of-seatmeal-mandatory" },
+  { lid: "FLI2-220", title: "Fare family Cheq: tags via userprofile API (CHEQ_FARE_FAMILY_ENABLED)",            status: "In Review",       date: "since 16 Jun",  dev: "Anirudh",       kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-220/fare-family-cheq-tags-via-userprofile-api" },
+  { lid: "FLI2-78",  title: "Amadeus integration (canonical implementation + QA umbrella)",                     status: "In Review",       date: "since 29 May",  dev: "Suvidh",        kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-78/amadeus-integration" },
+  { lid: "FLI2-214", title: "Amadeus Search Integration (fare family, cancellation/amendment charges)",         status: "In Review",       date: "since 12 Jun",  dev: "Yukti",         kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-214/amadeus-search-integration" },
+  { lid: "FLI2-184", title: "My Trips icon overlaps iOS Dynamic Island/notification area",                      status: "In Review",       date: "since 3 Jun",   dev: "Arjunb",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-184/my-trips-icon-overlaps-with-ios-dynamic-islandnotification-area" },
+  { lid: "FLI2-196", title: "Incorrect Refund Summary displayed for two-airline return cancellation",           status: "In Review",       date: "since 8 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-196/incorrect-refund-summary-being-displayed-copy" },
+  { lid: "FLI2-197", title: "New Slack alert — Order stuck in Booking in Progress state",                       status: "In Review",       date: "since 5 Jun",   dev: "Yukti",         kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-197/new-slack-alert-order-in-booking-in-progress-state-copy" },
+  { lid: "FLI2-100", title: "Segregate flight-search WebClients by use case (domestic/intl/round-trip/heavy)",  status: "In Review",       date: "since 28 May",  dev: "Anirudh",       kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-100/segregate-flight-search-webclients-by-use-case-domestic-international" },
+  { lid: "FLI2-181", title: "Introduce WebClientFactory + properties-driven config for Flights",                status: "In Review",       date: "since 3 Jun",   dev: "Anirudh",       kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-181/introduce-webclientfactory-properties-driven-config-for-flights" },
+  { lid: "FLI2-102", title: "RN nativebridge timing out at 50s on multiple events (~27K errors)",               status: "In Review",       date: "since 1 Jun",   dev: "Arjunb",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-102/datadogposthog-react-native-nativebridge-timing-out-at-50s-on-multiple" },
+
+  // ===== QA =====
+  { lid: "FLI2-219", title: "Fare family roundtrip → domestic (Frontend across Niyo/OneCard/Jupiter/etc)",      status: "QA",              date: "since 26 Jun",  dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-219/fare-family-roundtrip-domestic" },
+  { lid: "FLI2-265", title: "OneCard: duplicate convenience fee on Confirm Itinerary when points are burnt",    status: "QA",              date: "since 25 Jun",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-265/fix-duplicate-convenience-fee-display-on-onecard-flights-confirm" },
+  { lid: "FLI2-252", title: "Hide Effective Price for 'fly free' fares when coins are enabled",                 status: "QA",              date: "since 25 Jun",  dev: "Suvidh",        kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-252/effective-price-should-be-hidden-for-fly-free-fares-when-coins-are" },
+  { lid: "FLI2-239", title: "Missing UI for EMI Opted Status after GoldX flight booking",                       status: "QA",              date: "since 25 Jun",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-239/missing-ui-for-emi-opted-status-after-flight-booking-using-goldx-card" },
+  { lid: "FLI2-6",   title: "Uni EMI eticket and invoice changes",                                              status: "QA",              date: "since 18 Jun",  dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-6/uni-emi-eticket-and-invoice-changes" },
+  { lid: "FLI2-160", title: "Bottom Price Details Bar floats during scroll (UNI prod)",                         status: "QA",              date: "since 24 Jun",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-160/bottom-price-details-bar-floats-during-scroll-on-production-uni-prod" },
+  { lid: "FLI2-34",  title: "'No Flights Available' error persists due to cached results (all orgs)",           status: "QA",              date: "since 24 Jun",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-34/no-flights-available-error-persists-due-to-cached-results-on-flight" },
+  { lid: "FLI2-257", title: "Coin burn displays entire balance instead of only the discount amount",            status: "QA",              date: "since 24 Jun",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-257/coin-burn-displays-entire-coin-balance-instead-of-only-the-amount" },
+  { lid: "FLI2-159", title: "Incorrect flight count icons in Fare Summary for roundtrip",                       status: "QA",              date: "since 23 Jun",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-159/incorrect-flight-count-icons-displayed-in-fare-summary-for-roundtrip" },
+  { lid: "FLI2-246", title: "Sort: deselect selection + scroll-to-top when default sort changes",               status: "QA",              date: "since 23 Jun",  dev: "Rakshith",      kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-246/sort-when-you-change-the-default-sorting-to-another-option-the-current" },
+  { lid: "FLI2-242", title: "Don't show quick-filter option if it doesn't exist in the itinerary",              status: "QA",              date: "since 22 Jun",  dev: "Rakshith",      kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-242/do-not-show-quick-filter-option-if-it-doesnt-exist-in-the-itienrary" },
+  { lid: "FLI2-131", title: "UNI: cross-sell redirection from hotels into flights",                             status: "QA",              date: "since 22 Jun",  dev: "Rakshith",      kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-131/uni-redirection-for-hotels-into-flights" },
+  { lid: "FLI2-3",   title: "Uni Coin Burn (UniCards coin burn discount during booking)",                       status: "QA",              date: "since 22 Jun",  dev: "Arvind",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-3/uni-coin-burn" },
+  { lid: "FLI2-130", title: "Supplier switchover for not-found flights (price-check failover)",                 status: "QA",              date: "since 22 Jun",  dev: "Rakshith",      kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-130/supplier-switch-over-issue-for-not-found-flights" },
+  { lid: "FLI2-233", title: "Incorrect font weight for 'No Cost EMI Available' text in round-trip results",     status: "QA",              date: "since 18 Jun",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-233/incorrect-font-weight-for-no-cost-emi-available-text-in-round-trip" },
+  { lid: "FLI2-237", title: "Net effective price not updating on adding Seats/Meals/Baggage",                   status: "QA",              date: "since 18 Jun",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-237/net-effective-price-not-updating-on-adding-seats-meals-baggage" },
+  { lid: "FLI2-238", title: "Net effective price not updating on adding SMB (duplicate of 237)",                status: "QA",              date: "since 18 Jun",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-238/net-effective-price-not-updating-on-adding-seats-meals-baggage" },
+  { lid: "FLI2-83",  title: "Uni EMI and coin burn",                                                            status: "QA",              date: "since 22 Apr",  dev: "Suvidh",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-83/uni-emi-and-coin-burn" },
+  { lid: "FLI2-31",  title: "CleartripV4: non-prod mocking wrapper for V4 supplier",                            status: "QA",              date: "since 11 May",  dev: "Yukti",         kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-31/cleartripv4-add-non-prod-mocking-wrapper-for-v4-supplier-parity-with" },
+
+  // ===== To be deployed =====
+  // (empty — all approved items shipped this week)
+
+  // ===== Shipped to prod (Done) — since Fri 19 Jun 17:30 IST, most recent first =====
+  { lid: "FLI2-261", title: "All orgs > scroll is not stable, it jumps so many results",                        status: "Done",            date: "26 Jun 11:07",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-261/all-orgs-scroll-is-not-stable-it-jumps-so-many-results" },
+  { lid: "FLI2-264", title: "Fare strip calendar hides inconsistently when scrolling SRP",                      status: "Done",            date: "26 Jun 11:07",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-264/fare-strip-calendar-hides-inconsistently-when-scrolling-the-flight" },
+  { lid: "FLI2-221", title: "Flight price displays as ₹0 when Fare Family API fails / flight unavailable",      status: "Done",            date: "26 Jun 10:52",  dev: "Anirudh",       kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-221/flight-price-displays-as-indian-rupee0-when-fare-family-api-fails-and" },
+  { lid: "FLI2-85",  title: "Fare increase popup on Traveler page unresponsive (blocks user progression)",      status: "Done",            date: "25 Jun 18:26",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-85/fare-increase-popup-on-traveler-page-is-unresponsive-and-blocks-user" },
+  { lid: "FLI2-260", title: "Fare-change popup re-appears every time user returns from Payment Gateway",        status: "Done",            date: "25 Jun 18:26",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-260/fare-change-popup-re-appears-every-time-user-returns-from-payment" },
+  { lid: "FLI2-244", title: "International fares on CT: 'international=false' causes intra-foreign booking fail", status: "Done",          date: "24 Jun 16:30",  dev: "Anirudh",       kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-244/international-fares-on-ct-some-bookings-fails-within-international" },
+  { lid: "FLI2-206", title: "Flight landing same day, but showing +1 offset (timezone bug)",                    status: "Done",            date: "24 Jun 20:26",  dev: "Anirudh",       kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-206/flight-is-landing-the-same-day-but-we-are-showing-1-as-the-offset" },
+  { lid: "FLI2-256", title: "Flights SRP: 'Flexible with dates' / Lower Fares carousel renders cropped",        status: "Done",            date: "24 Jun 16:35",  dev: "Arvind",        kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-256/flights-srp-flexible-with-dateslower-fares-carousel-renders" },
+  { lid: "FLI2-259", title: "Coin balance shows 0 on SRP but full balance on EMI/Payment Options",              status: "Done",            date: "24 Jun 13:32",  dev: "Yogi",          kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-259/coin-balance-shows-0-on-search-results-but-appears-as-full-balance-on" },
+  { lid: "FLI2-29",  title: "Booking ID on hub for offline bookings",                                           status: "Done",            date: "24 Jun 12:43",  dev: "Arjun Tejaswi", kinds: ["feat","backend"],  url: "https://linear.app/onarrival/issue/FLI2-29/booking-id-needs-to-be-added-on-hub-for-offline-bookings" },
+  { lid: "FLI2-217", title: "Student fare → Cheq, Credilio, Kiwi, Jupiter",                                     status: "Done",            date: "23 Jun 17:30",  dev: "Arjunb",        kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-217/student-fare-cheq-credilio-kiwijupiter" },
+  { lid: "FLI2-247", title: "FE Global fix: Seat sequence in Air India",                                        status: "Done",            date: "23 Jun 11:47",  dev: "Rakshith",      kinds: ["bug","frontend"],  url: "https://linear.app/onarrival/issue/FLI2-247/fe-global-fix-seat-sequence-in-air-india" },
+  { lid: "FLI2-230", title: "OneCard: payment successful but stuck in itinerary created",                       status: "Done",            date: "23 Jun 10:50",  dev: "Arjun Tejaswi", kinds: ["bug","backend"],   url: "https://linear.app/onarrival/issue/FLI2-230/onecard-showing-payment-is-successful-but-stuck-in-itinerary-created" },
+  { lid: "FLI2-249", title: "Enable payment-status polling for OneCard",                                        status: "Done",            date: "22 Jun 17:58",  dev: "Suvidh",        kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-249/enable-payment-status-polling-for-onecard" },
+  { lid: "FLI2-222", title: "Fare strip calendar — add across all orgs",                                        status: "Done",            date: "22 Jun 16:15",  dev: "Yogi",          kinds: ["feat","frontend"], url: "https://linear.app/onarrival/issue/FLI2-222/fare-strip-calendar-add-across-all-orgs" },
+  { lid: "FLI2-243", title: "Webhook fan-out 'Order not found' noise: centralize trip→org mapping (CTV4 fix)",  status: "Done",            date: "22 Jun 14:11",  dev: "Suvidh",        kinds: ["techdebt","backend"], url: "https://linear.app/onarrival/issue/FLI2-243/webhook-fan-out-order-not-found-noise-centralize-triporg-mapping-write" }
+];
+
+const _LEGACY_TS_MAP_UNUSED = {
+  "FLI2-261":"2026-06-26 05:37:40", "FLI2-264":"2026-06-26 05:37:14", "FLI2-221":"2026-06-26 05:22:28",
+  "FLI2-85":"2026-06-25 12:56:57",  "FLI2-260":"2026-06-25 12:56:41", "FLI2-244":"2026-06-24 11:00:19",
+  "FLI2-206":"2026-06-24 14:56:18", "FLI2-256":"2026-06-24 11:05:20", "FLI2-259":"2026-06-24 08:02:57",
+  "FLI2-29-legacy":"2026-06-24 07:13:18",  "FLI2-217":"2026-06-23 12:00:44", "FLI2-247":"2026-06-23 06:17:28",
+  "FLI2-230":"2026-06-23 05:20:54", "FLI2-249":"2026-06-22 12:28:10", "FLI2-222":"2026-06-22 10:45:36",
+  "FLI2-243":"2026-06-22 08:41:55"
+};
+
+// ============================================================
+// Formatters
+// ============================================================
+function nfmt(v) {
+  const x = Number(v);
+  if (!isFinite(x)) return String(v == null ? "" : v);
+  return x.toLocaleString("en-IN");
+}
+function fmtPct(v, digits) { return (v * 100).toFixed(digits != null ? digits : 1) + "%"; }
+function fmtDeltaPct(now, prev) {
+  if (!prev) return "—";
+  const d = ((now - prev) / prev) * 100;
+  return (d >= 0 ? "+" : "−") + Math.abs(d).toFixed(1) + "%";
+}
+function fmtDeltaPP(d) {
+  if (d == null || !isFinite(d)) return "—";
+  return (d >= 0 ? "+" : "−") + Math.abs(d).toFixed(2) + "pp";
+}
+function deltaClassPct(d) {
+  if (d == null || !isFinite(d)) return "delta flat";
+  if (d > 0.5) return "delta up";
+  if (d < -0.5) return "delta down";
+  return "delta flat";
+}
+function deltaClassPP(d) {
+  if (d == null || !isFinite(d)) return "delta flat";
+  if (d > 0.05) return "delta up";
+  if (d < -0.05) return "delta down";
+  return "delta flat";
+}
+function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+function setHTML(id, v) { const el = document.getElementById(id); if (el) el.innerHTML = v; }
+function setBanner(t, c) {
+  const b = document.getElementById("statusBanner");
+  if (!b) return;
+  b.textContent = t; b.classList.remove("ok","warn","err"); if (c) b.classList.add(c);
+}
+
+// ============================================================
+// Render: Scorecard
+// ============================================================
+function renderScorecard(s) {
+  // Helper: show "—" when comparison period is 0/absent (no-comparison view).
+  function safeLast(v, fmt) { return v ? fmt(v) : "—"; }
+  // Show "—" when the current-period value is also 0/absent (source disconnected).
+  function safeThis(v, fmt) { return v ? fmt(v) : "—"; }
+  function hideCompareIfNone(cardId, lastVal) {
+    if (lastVal) return;
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const cmp = card.parentElement && card.parentElement.querySelector(".compare");
+    if (cmp) cmp.style.display = "none";
+  }
+  setText("kpi-search", safeThis(s.this_searches, nfmt));
+  setText("kpi-search-last", safeLast(s.last_searches, nfmt));
+  const dS = ((s.this_searches - s.last_searches) / (s.last_searches || 1)) * 100;
+  const e1 = document.getElementById("kpi-search-delta"); if (e1) { e1.textContent = s.this_searches ? fmtDeltaPct(s.this_searches, s.last_searches) : "—"; e1.className = deltaClassPct(dS); }
+  hideCompareIfNone("kpi-search", s.last_searches);
+
+  setText("kpi-usearch", safeThis(s.this_usearch, nfmt));
+  setText("kpi-usearch-last", safeLast(s.last_usearch, nfmt));
+  const dU = ((s.this_usearch - s.last_usearch) / (s.last_usearch || 1)) * 100;
+  const e2 = document.getElementById("kpi-usearch-delta"); if (e2) { e2.textContent = s.this_usearch ? fmtDeltaPct(s.this_usearch, s.last_usearch) : "—"; e2.className = deltaClassPct(dU); }
+  hideCompareIfNone("kpi-usearch", s.last_usearch);
+
+  // Aggregate user-days: sum of daily-unique users across the period.
+  const thisUD = s.this_user_days || 0, lastUD = s.last_user_days || 0;
+  setText("kpi-userdays", thisUD ? nfmt(thisUD) : "—");
+  setText("kpi-userdays-last", safeLast(lastUD, nfmt));
+  const dUD = ((thisUD - lastUD) / (lastUD || 1)) * 100;
+  const eUD = document.getElementById("kpi-userdays-delta"); if (eUD) { eUD.textContent = thisUD ? fmtDeltaPct(thisUD, lastUD) : "—"; eUD.className = deltaClassPct(dUD); }
+  hideCompareIfNone("kpi-userdays", lastUD);
+
+  setText("kpi-book", nfmt(s.this_book));
+  setText("kpi-book-last", safeLast(s.last_book, nfmt));
+  const dB = ((s.this_book - s.last_book) / (s.last_book || 1)) * 100;
+  const e3 = document.getElementById("kpi-book-delta"); if (e3) { e3.textContent = fmtDeltaPct(s.this_book, s.last_book); e3.className = deltaClassPct(dB); }
+  hideCompareIfNone("kpi-book", s.last_book);
+
+  // Conversion = total bookings ÷ aggregate user-days for the period.
+  // Numerator = total bookings (all orders, repeats counted). Denominator = daily-unique searchers summed across days.
+  // Interpretation: "Of every 100 search visit-days, this many produced a booking."
+  // Requires PostHog (user-days denominator) — if that source is down, show em-dash.
+  // Delta shown in absolute percentage-points (pp) not relative % — since conversion is itself a %.
+  const tConv = s.this_user_days ? s.this_book / s.this_user_days : 0;
+  const lConv = s.last_user_days ? s.last_book / s.last_user_days : 0;
+  setText("kpi-conv", tConv ? fmtPct(tConv, 2) : "—");
+  setText("kpi-conv-last", lConv ? fmtPct(lConv, 2) : "—");
+  const dCPP = (tConv - lConv) * 100;  // absolute pp: convert decimals to percent then subtract
+  const e4 = document.getElementById("kpi-conv-delta"); if (e4) { e4.textContent = (tConv && lConv) ? fmtDeltaPP(dCPP) : "—"; e4.className = deltaClassPP(dCPP); }
+  hideCompareIfNone("kpi-conv", lConv);
+
+  return { dB, dU, dS, dCPct: dCPP, tConv, lConv, payToSuccessDelta: null };
+}
+
+// ============================================================
+// Render: Funnel + Conv Table + Exec Summary
+// ============================================================
+function renderFunnel(rows) {
+  rows = rows.slice().sort(function(a,b) { return a.sort - b.sort; });
+  const host = document.getElementById("funnelHost");
+  if (!host || !rows.length) return;
+
+  // If every step's this_users is 0/absent, the data source (PostHog) is disconnected —
+  // show a friendly notice instead of a wall of 0-bars.
+  const anyThis = rows.some(function(r){ return r.this_users; });
+  if (!anyThis) {
+    host.innerHTML = '<div style="padding:22px 16px; border:1px dashed var(--line); border-radius:10px; color: var(--ink-3); font-size:13px; line-height:1.55;"><strong style="color: var(--ink-2);">Funnel unavailable.</strong> PostHog MCP is not connected — steps 1-6 require Home_Search, SRP_LoadResult, SRP_FlightSelect, SRP_FlightConfirm, Confirm_Continue, PayConfirm_Pay unique-user counts. Step 7 (booking) is still tracked via Satori; see the Bookings card in the headline metrics above. <br><br>Reconnect PostHog and hit <em>Refresh</em> to backfill this section.</div>';
+    const tbody = document.getElementById("convTableBody");
+    if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--ink-3); padding: 14px;">Requires PostHog. Reconnect and refresh.</td></tr>';
+    return null;
+  }
+
+  const baseThis = Math.max.apply(null, rows.map(function(r){ return r.this_users; }));
+  const baseLast = Math.max.apply(null, rows.map(function(r){ return r.last_users; }));
+  const baseMax = Math.max(baseThis, baseLast);
+
+  const step1This = rows[0].this_users || 1;
+
+  const stepNarratives = {
+    1: { healthy: "Search resulted in flights for nearly everyone", danger: "users dropped before flights loaded" },
+    2: { healthy: "Search resulted in flights for nearly everyone", danger: "users left without picking a flight" },
+    3: { healthy: "Selection → confirm card is essentially seamless", danger: "users selected but did not confirm" },
+    4: { healthy: "Selection → confirm card is essentially seamless", danger: "users abandoned the Itinerary screen" },
+    5: { healthy: "Continue → Pay funnel is healthy", danger: "users continued but did not tap Pay" },
+    6: { healthy: "Pay → Success is healthy", danger: "Pay-initiated but no Success — silent gap" }
+  };
+
+  let html = "";
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const isFirst = i === 0;
+    const isFinal = i === rows.length - 1;
+    const wThis = Math.max(2, (r.this_users / baseMax) * 100);
+    const wLast = Math.max(2, (r.last_users / baseMax) * 100);
+    const wowUsers = ((r.this_users - r.last_users) / (r.last_users || 1)) * 100;
+
+    // Pill: only show on Step 1 ("Enter 100%") and the final step ("End-to-end X%").
+    // Intermediate steps don't show a pill — the step-conversion in the connector tells you the per-step retention.
+    let pillHTML = "";
+    if (isFirst) {
+      pillHTML = `<span class="step-conv-pill"><span class="label-small">enter</span>100%</span>`;
+    } else if (isFinal) {
+      const endToEnd = (r.this_users / step1This) * 100;
+      pillHTML = `<span class="step-conv-pill"><span class="label-small">end-to-end</span>${endToEnd.toFixed(2)}%</span>`;
+    }
+
+    // When last_users is 0/absent, hide the second bar row and WoW footer (no-comparison view).
+    const hasCompare = r.last_users && r.last_users > 0;
+    const currentLabel = hasCompare ? "This wk" : "June 2026";
+    html += `<div class="fstep${isFinal ? ' final' : ''}">
+      <div class="step-head">
+        <span class="step-num">${r.sort}</span>
+        <span class="step-name">${r.step}</span>
+        ${pillHTML}
+      </div>
+      <div class="bar-row"><span class="bar-label">${currentLabel}</span><div class="bar-track"><div class="bar-fill this" style="width:${wThis.toFixed(1)}%"></div></div><span class="bar-count">${nfmt(r.this_users)}</span></div>
+      ${hasCompare ? `<div class="bar-row"><span class="bar-label">Last wk</span><div class="bar-track"><div class="bar-fill last" style="width:${wLast.toFixed(1)}%"></div></div><span class="bar-count">${nfmt(r.last_users)}</span></div>` : ""}
+      ${hasCompare ? `<div class="step-foot"><span class="lbl">WoW users${isFinal ? ' (bookings)' : ''}</span><span class="${deltaClassPct(wowUsers)}">${fmtDeltaPct(r.this_users, r.last_users)}</span></div>` : ""}
+    </div>`;
+
+    if (i < rows.length - 1) {
+      const next = rows[i+1];
+      const stepConvThis = (next.this_users / (r.this_users || 1)) * 100;
+      const stepConvLast = (next.last_users / (r.last_users || 1)) * 100;
+      // Absolute pp change: both sides are already in percent, so subtraction gives pp directly.
+      const dPP = stepConvLast ? (stepConvThis - stepConvLast) : null;
+      const dropCount = Math.max(0, r.this_users - next.this_users);
+      const isDanger = stepConvThis < 95 && stepConvThis < 99;
+      const narrative = stepNarratives[r.sort] || { healthy: "step is healthy", danger: "users dropped" };
+      const hasCompareRow = r.last_users && next.last_users;
+      const text = isDanger
+        ? `<span class="conv-badge danger">${stepConvThis.toFixed(1)}% step conv.</span> &nbsp;<span class="drop-count">${nfmt(dropCount)}</span> ${narrative.danger}`
+        : `<span class="conv-badge healthy">${stepConvThis.toFixed(1)}% step conv.</span> &nbsp;${narrative.healthy}`;
+      const wowMini = hasCompareRow
+        ? `<span class="wow-mini ${deltaClassPP(dPP).replace('delta ','')}">WoW step-conv ${fmtDeltaPP(dPP)}</span>`
+        : "";
+      html += `<div class="fdrop"><span class="arrow">↓</span><span class="drop-text">${text}</span>${wowMini}</div>`;
+    }
+  }
+
+  host.innerHTML = html;
+
+  // Build conv table from same rows
+  const out = [];
+  for (let i = 1; i < rows.length; i++) {
+    const tConv = (rows[i].this_users / Math.max(1, rows[i-1].this_users)) * 100;
+    const lConv = (rows[i].last_users / Math.max(1, rows[i-1].last_users)) * 100;
+    // Absolute pp change: both are already in percent, subtract directly.
+    const dPP = lConv ? (tConv - lConv) : null;
+    out.push({ transition: rows[i-1].step + " → " + rows[i].step, tConv, lConv, dPP });
+  }
+  // If any last_users are 0, treat this as a no-comparison view.
+  const noCompare = rows.some(function(r){ return !r.last_users; });
+  if (!noCompare) {
+    out.sort(function(a,b){ return Math.abs(b.dPP || 0) - Math.abs(a.dPP || 0); });
+  }
+  const tbody = document.getElementById("convTableBody");
+  if (tbody) {
+    tbody.innerHTML = out.map(function(r, i) {
+      if (noCompare) {
+        return `<tr>
+          <td>${r.transition}</td>
+          <td class="num">${r.tConv.toFixed(1)}%</td>
+        </tr>`;
+      }
+      return `<tr ${i===0?'class="biggest"':''}>
+        <td>${r.transition}</td>
+        <td class="num">${r.tConv.toFixed(1)}%</td>
+        <td class="num">${r.lConv.toFixed(1)}%</td>
+        <td class="num"><span class="${deltaClassPP(r.dPP)}">${fmtDeltaPP(r.dPP)}</span></td>
+      </tr>`;
+    }).join("");
+  }
+
+  // Find biggest mover for exec summary
+  if (out.length) {
+    return out[0]; // {transition, tConv, lConv, dPct}
+  }
+  return null;
+}
+
+// ============================================================
+// Render: Executive Summary
+// ============================================================
+function renderExecSummary(scorecard, biggestMove) {
+  // Conversion = total bookings / aggregate user-days (matches the headline card).
+  const tConv = scorecard.this_user_days ? scorecard.this_book / scorecard.this_user_days : 0;
+  const lConv = scorecard.last_user_days ? scorecard.last_book / scorecard.last_user_days : 0;
+  const dBook = ((scorecard.this_book - scorecard.last_book) / (scorecard.last_book || 1)) * 100;
+  const dUS   = ((scorecard.this_usearch - scorecard.last_usearch) / (scorecard.last_usearch || 1)) * 100;
+  const dConv = lConv ? ((tConv - lConv) / lConv) * 100 : 0;  // relative %
+
+  function hi(v, formatFn, kind) {
+    let cls = kind || (v >= 0 ? "up" : "down");
+    if (Math.abs(v) < 0.5 && (kind == null)) cls = "flat";
+    return `<span class="hi ${cls}">${formatFn(v)}</span>`;
+  }
+  function pctFn(v) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%"; }
+
+  const tone = (dBook > 5 && dConv > 0) ? "Strong week"
+             : (dBook < -5 || dConv < -2) ? "Soft week"
+             : "Mixed week";
+
+  const lead = `${tone}: bookings ${hi(dBook, pctFn)}, end-to-end conversion ${hi(dConv, pctFn)}, unique searchers ${hi(dUS, pctFn)}.`;
+
+  let detail = `End-to-end conversion moved from ${fmtPct(lConv,2)} → ${fmtPct(tConv,2)}.`;
+  if (biggestMove) {
+    const dirWord = (biggestMove.dPct || 0) >= 0 ? "improved" : "regressed";
+    detail += ` The biggest step movement: <strong>${biggestMove.transition}</strong> ${dirWord} by ${pctFn(biggestMove.dPct || 0)} (${biggestMove.lConv.toFixed(1)}% → ${biggestMove.tConv.toFixed(1)}%).`;
+  }
+  detail += ` <strong>${FEATURES.length} items shipped to prod</strong> in the last 14 days.`;
+
+  setHTML("execLead", lead);
+  setHTML("execDetail", detail);
+}
+
+// ============================================================
+// Render: Shipped to prod table
+// ============================================================
+function pctOf(b, s) { return s > 0 ? (b / s * 100) : 0; }
+function devInitials(name) {
+  if (!name || name === "Unassigned") return "?";
+  return name.split(" ").map(function(p){ return p[0]; }).join("").slice(0, 2).toUpperCase();
+}
+function devColor(name) {
+  if (!name || name === "Unassigned") return "#94a3b8";
+  let hash = 0;
+  for (const c of name) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 55%, 48%)`;
+}
+function kindBadges(kinds) {
+  return kinds.map(function(k) {
+    const cls = k === "feat" ? "feat" : k === "bug" ? "bug" : k === "hotfix" ? "hotfix" : k === "backend" ? "backend" : k === "frontend" ? "frontend" : k === "techdebt" ? "techdebt" : "feat";
+    const label = k === "feat" ? "feature" : k === "bug" ? "bug-fix" : k === "techdebt" ? "tech-debt" : k;
+    return `<span class="badge ${cls}">${label}</span>`;
+  }).join("");
+}
+// Latest live data for features (set by refresh, used by re-render after remove/restore)
+let LIVE_FEATURES = null;
+function currentFeatures() { return LIVE_FEATURES || FEATURES; }
+
+// localStorage-backed set of removed Linear IDs
+const STORAGE_KEY = "wbr_removed_lids_v1";
+function loadRemoved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch (e) { return new Set(); }
+}
+function saveRemoved(set) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(set))); }
+  catch (e) { console.warn("[WBR] localStorage save failed:", e); }
+}
+let REMOVED = loadRemoved();
+
+function removeFeature(lid) {
+  REMOVED.add(lid);
+  saveRemoved(REMOVED);
+  renderFeatures(currentFeatures());
+}
+function restoreFeature(lid) {
+  REMOVED.delete(lid);
+  saveRemoved(REMOVED);
+  renderFeatures(currentFeatures());
+}
+
+function statusPillHTML(status) {
+  if (!status) return "";
+  const cls = status === "Done" ? "done"
+    : status === "To be deployed" ? "tobedeployed"
+    : status === "QA" ? "qa"
+    : status === "In Review" ? "inreview"
+    : status === "In Progress" ? "inprogress"
+    : "";
+  return `<span class="status-pill ${cls}">${status}</span>`;
+}
+
+function featureRowHTML(f, options) {
+  const actionHTML = options.action === "remove"
+    ? `<button class="remove-btn" data-lid="${f.lid}" title="Hide this from the meeting view">✕</button>`
+    : `<button class="restore-btn" data-lid="${f.lid}" title="Bring back to main table">Restore</button>`;
+  return `<tr>
+    <td><div class="ftitle"><a href="${f.url}" target="_blank">${f.lid} · ${f.title}</a> ${kindBadges(f.kinds)}</div></td>
+    <td>${statusPillHTML(f.status)}</td>
+    <td>${f.date}</td>
+    <td><span class="dev"><span class="avatar" style="background:${devColor(f.dev)};">${devInitials(f.dev)}</span>${f.dev}</span></td>
+    <td class="row-action">${actionHTML}</td>
+  </tr>`;
+}
+
+function renderFeatures(features) {
+  const tbody = document.getElementById("featureTable");
+  const removedTbody = document.getElementById("removedTable");
+  const removedPanel = document.getElementById("removedPanel");
+  const removedCountEl = document.getElementById("removedCount");
+  const shippedCountEl = document.getElementById("shippedCount");
+  if (!tbody || !removedTbody) return;
+
+  const visible = features.filter(function(f){ return !REMOVED.has(f.lid); });
+  const removed = features.filter(function(f){ return REMOVED.has(f.lid); });
+
+  tbody.innerHTML = visible.map(function(f){ return featureRowHTML(f, { action: "remove" }); }).join("");
+  removedTbody.innerHTML = removed.map(function(f){ return featureRowHTML(f, { action: "restore" }); }).join("");
+
+  if (removedPanel) removedPanel.style.display = removed.length ? "" : "none";
+  if (removedCountEl) removedCountEl.textContent = String(removed.length);
+  if (shippedCountEl) {
+    const tally = { "Done": 0, "To be deployed": 0, "QA": 0, "In Review": 0, "In Progress": 0 };
+    visible.forEach(function(f){ if (tally[f.status] != null) tally[f.status]++; });
+    const parts = [];
+    if (tally["Done"])           parts.push(tally["Done"] + " shipped");
+    if (tally["To be deployed"]) parts.push(tally["To be deployed"] + " ready to ship");
+    if (tally["QA"])             parts.push(tally["QA"] + " in QA");
+    if (tally["In Review"])      parts.push(tally["In Review"] + " in review");
+    if (tally["In Progress"])    parts.push(tally["In Progress"] + " in progress");
+    shippedCountEl.textContent = "Linear · Flights Pod · " + (parts.join(" · ") || "no items");
+  }
+
+  // Wire up the buttons
+  tbody.querySelectorAll(".remove-btn").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      const lid = e.currentTarget.getAttribute("data-lid");
+      if (lid) removeFeature(lid);
+    });
+  });
+  removedTbody.querySelectorAll(".restore-btn").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      const lid = e.currentTarget.getAttribute("data-lid");
+      if (lid) restoreFeature(lid);
+    });
+  });
+}
+
+// ============================================================
+// Initial render from snapshot
+// ============================================================
+renderScorecard(SNAPSHOT.scorecard);
+const initialBigMove = renderFunnel(SNAPSHOT.funnel);
+renderExecSummary(SNAPSHOT.scorecard, initialBigMove);
+renderFeatures(FEATURES);
+
+// ============================================================
+// Live refresh
+// ============================================================
+(function() {
+  "use strict";
+
+  const SQL_SCORECARD = "SELECT countIf(event='Home_Search' AND timestamp >= now() - INTERVAL 7 DAY) AS this_searches, countIf(event='Home_Search' AND timestamp >= now() - INTERVAL 14 DAY AND timestamp < now() - INTERVAL 7 DAY) AS last_searches, count(DISTINCT if(event='Home_Search' AND timestamp >= now() - INTERVAL 7 DAY, distinct_id, NULL)) AS this_usearch, count(DISTINCT if(event='Home_Search' AND timestamp >= now() - INTERVAL 14 DAY AND timestamp < now() - INTERVAL 7 DAY, distinct_id, NULL)) AS last_usearch, count(DISTINCT if(event='PayConfirm_Success' AND timestamp >= now() - INTERVAL 7 DAY, distinct_id, NULL)) AS this_ubook, count(DISTINCT if(event='PayConfirm_Success' AND timestamp >= now() - INTERVAL 14 DAY AND timestamp < now() - INTERVAL 7 DAY, distinct_id, NULL)) AS last_ubook, countIf(event='PayConfirm_Success' AND timestamp >= now() - INTERVAL 7 DAY) AS this_book, countIf(event='PayConfirm_Success' AND timestamp >= now() - INTERVAL 14 DAY AND timestamp < now() - INTERVAL 7 DAY) AS last_book FROM events WHERE event IN ('Home_Search','PayConfirm_Success') AND timestamp >= now() - INTERVAL 14 DAY LIMIT 1";
+
+  const SQL_FUNNEL = "SELECT step, sort, count(DISTINCT if(timestamp >= now() - INTERVAL 7 DAY, distinct_id, NULL)) AS this_users, count(DISTINCT if(timestamp >= now() - INTERVAL 14 DAY AND timestamp < now() - INTERVAL 7 DAY, distinct_id, NULL)) AS last_users FROM (SELECT distinct_id, timestamp, multiIf(event='Home_Search',1,event='SRP_LoadResult',2,event='SRP_FlightSelect',3,event='SRP_FlightConfirm',4,event='Confirm_Continue',5,event='PayConfirm_Pay',6,event='PayConfirm_Success',7,0) AS sort, multiIf(event='Home_Search','Home_Search',event='SRP_LoadResult','SRP_LoadResult',event='SRP_FlightSelect','SRP_FlightSelect',event='SRP_FlightConfirm','SRP_FlightConfirm',event='Confirm_Continue','Confirm_Continue',event='PayConfirm_Pay','PayConfirm_Pay',event='PayConfirm_Success','PayConfirm_Success','') AS step FROM events WHERE event IN ('Home_Search','SRP_LoadResult','SRP_FlightSelect','SRP_FlightConfirm','Confirm_Continue','PayConfirm_Pay','PayConfirm_Success') AND timestamp >= now() - INTERVAL 14 DAY) WHERE sort > 0 GROUP BY step, sort ORDER BY sort LIMIT 10";
+
+  function buildFeatureSql() {
+    const tuples = FEATURES.map(function(f){ return `tuple('${f.lid}', toDateTime('${TS_MAP[f.lid]}'))`; }).join(", ");
+    return `WITH releases AS (SELECT arrayJoin([${tuples}]) AS r), flat AS (SELECT r.1 AS lid, r.2 AS rel, dateDiff('hour', r.2, now()) AS hours_elapsed FROM releases) SELECT lid, hours_elapsed, countDistinctIf(events.distinct_id, events.event='Home_Search' AND events.timestamp >= rel - INTERVAL hours_elapsed HOUR AND events.timestamp < rel) AS pre_s, countDistinctIf(events.distinct_id, events.event='PayConfirm_Success' AND events.timestamp >= rel - INTERVAL hours_elapsed HOUR AND events.timestamp < rel) AS pre_b, countDistinctIf(events.distinct_id, events.event='Home_Search' AND events.timestamp >= rel) AS post_s, countDistinctIf(events.distinct_id, events.event='PayConfirm_Success' AND events.timestamp >= rel) AS post_b FROM flat CROSS JOIN events WHERE events.event IN ('Home_Search','PayConfirm_Success') AND events.timestamp >= now() - INTERVAL 28 DAY GROUP BY lid, rel, hours_elapsed LIMIT 50`;
+  }
+
+  function extractText(node, acc) {
+    if (node == null) return;
+    if (typeof node === "string") { acc.push(node); return; }
+    if (typeof node !== "object") return;
+    if (Array.isArray(node)) { for (const it of node) extractText(it, acc); return; }
+    if (typeof node.text === "string") acc.push(node.text);
+    if (typeof node.value === "string") acc.push(node.value);
+    if (typeof node.output === "string") acc.push(node.output);
+    for (const k of ["content","result","results","data","items","messages","message","structuredContent","output"]) {
+      if (node[k] && typeof node[k] === "object") extractText(node[k], acc);
+    }
+  }
+  function parseSql(resp) {
+    const acc = []; try { extractText(resp, acc); } catch (e) {}
+    const text = acc.join("\n") || (typeof resp === "string" ? resp : "");
+    const marker = text.indexOf("Here is the results table");
+    const slice = marker >= 0 ? text.slice(marker) : text;
+    const fences = slice.match(/```[a-zA-Z]*\n?[\s\S]*?```/g) || [];
+    let block = null;
+    if (fences.length) {
+      block = fences[fences.length - 1].replace(/^```[a-zA-Z]*\n?/, "").replace(/```$/, "").trim();
+    }
+    if (!block) {
+      const pipeLines = text.split(/\r?\n/).filter(function(l){ return l.includes("|"); });
+      if (pipeLines.length >= 2) block = pipeLines.join("\n");
+    }
+    if (!block) return [];
+    const lines = block.split(/\r?\n/).filter(function(l){ return l.trim() && l.includes("|"); });
+    if (!lines.length) return [];
+    const headers = lines[0].split("|").map(function(s){ return s.trim(); });
+    const out = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cells = lines[i].split("|").map(function(s){ return s.trim(); });
+      const row = {}; headers.forEach(function(h, idx){ row[h] = cells[idx]; });
+      out.push(row);
+    }
+    return out;
+  }
+
+  // ---------- Debug logging (visible in the Debug expander on the page) ----------
+  const DEBUG_LOG = [];
+  function dbg(msg, obj) {
+    const t = new Date().toLocaleTimeString();
+    let line = "[" + t + "] " + msg;
+    if (obj !== undefined) {
+      try { line += "  " + (typeof obj === "string" ? obj : JSON.stringify(obj, null, 0).slice(0, 600)); }
+      catch (e) { line += "  [unstringifiable]"; }
+    }
+    DEBUG_LOG.push(line);
+    if (DEBUG_LOG.length > 60) DEBUG_LOG.shift();
+    const el = document.getElementById("wbrDebugLog");
+    if (el) el.textContent = DEBUG_LOG.join("\n");
+    try { console.log("[WBR]", msg, obj || ""); } catch (e) {}
+  }
+  window._WBR = { DEBUG_LOG: DEBUG_LOG, lastResponses: {} };
+
+  async function callTool(name, args) {
+    if (!window.cowork) throw new Error("window.cowork is undefined (open this artifact INSIDE Cowork — file:// browsers don't have window.cowork)");
+    if (typeof window.cowork.callMcpTool !== "function") throw new Error("window.cowork exists but callMcpTool is missing — artifact runtime version mismatch");
+    dbg("→ call " + name, args);
+    const t0 = Date.now();
+    let resp;
+    try {
+      resp = await window.cowork.callMcpTool(name, args);
+    } catch (e) {
+      dbg("✗ throw " + name + " after " + (Date.now()-t0) + "ms: " + (e && e.message ? e.message : String(e)));
+      throw e;
+    }
+    const ms = Date.now() - t0;
+    window._WBR.lastResponses[name] = resp;
+    dbg("← " + ms + "ms typeof=" + typeof resp + " keys=" + (resp && typeof resp === "object" ? Object.keys(resp).join(",") : "(n/a)"));
+    return resp;
+  }
+
+  async function runSql(q) {
+    const resp = await callTool("mcp__979675bc-72b9-47cb-a8b6-474630c73873__execute-sql", { query: q });
+    const rows = parseSql(resp);
+    dbg("parsed rows=" + rows.length);
+    if (!rows.length) {
+      const acc = []; try { extractText(resp, acc); } catch (e) {}
+      const sample = acc.join("\n").slice(0, 400);
+      dbg("PARSE FAILED. Raw text sample:", sample || "(no extractable text)");
+    }
+    return rows;
+  }
+
+  // ---------- Satori: booking counts ----------
+  // schemaArg: "all" for cross-org, "uni" for UNI only, etc.
+  async function runSatori(question, schemaArg) {
+    try {
+      const resp = await callTool(
+        "mcp__29a3b9fd-fce1-4c3f-9e97-d23b2f38084a__run_natural_query",
+        { question: question, orgSchema: schemaArg || "all" }
+      );
+      const parts = []; extractText(resp, parts);
+      const text = parts.join("\n") || (typeof resp === "string" ? resp : JSON.stringify(resp));
+      let parsed = null;
+      try { parsed = JSON.parse(text); } catch (e) {
+        const m = text.match(/\{[\s\S]*\}/);
+        if (m) { try { parsed = JSON.parse(m[0]); } catch (e2) {} }
+      }
+      const data = parsed && parsed.response && Array.isArray(parsed.response.data) ? parsed.response.data : null;
+      if (!data || !data.length) { dbg("Satori: no data rows"); return 0; }
+      const row = data[0];
+      const firstKey = Object.keys(row)[0];
+      const n = Number(row[firstKey]);
+      dbg("Satori (" + (schemaArg || "all") + ") → " + firstKey + " = " + n);
+      return isFinite(n) ? n : 0;
+    } catch (e) {
+      dbg("✗ Satori call failed: " + (e && e.message ? e.message : String(e)));
+      return 0;
+    }
+  }
+
+  // ---------- Linear: live pull of pipeline + shipped items ----------
+  const FLIGHTS_POD_TEAM_ID = "08ca13ae-53ae-45c2-b592-806f4ce23f2f";
+
+  async function runLinearIssues(state, limit, updatedAtAgo) {
+    const args = { team: FLIGHTS_POD_TEAM_ID, state: state, limit: limit, orderBy: "updatedAt" };
+    if (updatedAtAgo) args.updatedAt = updatedAtAgo;
+    const resp = await callTool("mcp__16669825-e9de-44e0-9000-b9bbeb6bd58a__list_issues", args);
+    // Linear returns JSON. Extract all text and parse the first JSON object containing "issues".
+    const parts = []; extractText(resp, parts);
+    const text = parts.join("\n") || (typeof resp === "string" ? resp : JSON.stringify(resp));
+    let parsed = null;
+    try { parsed = JSON.parse(text); } catch (e) {
+      const m = text.match(/\{[\s\S]*\}/);
+      if (m) { try { parsed = JSON.parse(m[0]); } catch (e2) {} }
+    }
+    const issues = (parsed && parsed.issues) || [];
+    dbg("linear " + state + " → " + issues.length + " issues");
+    if (!issues.length && text) dbg("Linear raw sample:", text.slice(0, 300));
+    return issues;
+  }
+
+  function cleanDevName(name) {
+    if (!name) return "Unassigned";
+    let n = String(name).trim();
+    if (n.includes("@")) n = n.split("@")[0];
+    // Capitalize first letter
+    return n.charAt(0).toUpperCase() + n.slice(1);
+  }
+
+  function labelsToKinds(labels) {
+    if (!Array.isArray(labels) || !labels.length) return [];
+    const map = {
+      "bug": "bug", "hotfix": "hotfix", "feature": "feat", "feat": "feat",
+      "backend": "backend", "frontend": "frontend",
+      "tech debt": "techdebt", "techdebt": "techdebt", "tech-debt": "techdebt"
+    };
+    const out = [];
+    for (const l of labels) {
+      const k = map[String(l).toLowerCase().trim()];
+      if (k && out.indexOf(k) === -1) out.push(k);
+    }
+    return out;
+  }
+
+  function formatLinearDate(issue, status) {
+    const ts = (status === "Done") ? issue.completedAt : issue.startedAt;
+    if (!ts) return "—";
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return "—";
+    const opts = { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" };
+    const dateStr = d.toLocaleString("en-IN", opts);
+    // Strip leading "0" and clean up
+    if (status === "Done") return dateStr;
+    if (status === "To be deployed") {
+      const shortOpts = { day: "numeric", month: "short", timeZone: "Asia/Kolkata" };
+      return "ready · " + d.toLocaleString("en-IN", shortOpts);
+    }
+    // In Review / QA
+    const shortOpts = { day: "numeric", month: "short", timeZone: "Asia/Kolkata" };
+    return "since " + d.toLocaleString("en-IN", shortOpts);
+  }
+
+  function linearToFeature(issue, statusName) {
+    return {
+      lid: issue.id,
+      title: issue.title,
+      status: statusName,
+      date: formatLinearDate(issue, statusName),
+      dev: cleanDevName(issue.assignee),
+      kinds: labelsToKinds(issue.labels),
+      url: issue.url
+    };
+  }
+
+  // Sort: pipeline first (In Progress → In Review → QA → To be deployed), then Done by completion date desc
+  function sortFeatures(features) {
+    const order = { "In Progress": 0, "In Review": 1, "QA": 2, "To be deployed": 3, "Done": 4 };
+    return features.slice().sort(function(a, b) {
+      const oa = order[a.status] != null ? order[a.status] : 99;
+      const ob = order[b.status] != null ? order[b.status] : 99;
+      if (oa !== ob) return oa - ob;
+      // Same status: most-recently-active first
+      return b.lid.localeCompare(a.lid);  // FLI2-121 > FLI2-99 lexicographically? Use issue identifier desc as a tiebreaker
+    });
+  }
+
+  async function refresh() {
+    const btn = document.getElementById("refreshBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Refreshing…"; }
+    try {
+      setBanner("Refreshing searches from PostHog + bookings from Satori…", null);
+
+      // 1. PostHog scorecard + funnel + Satori (all orgs for scorecard, UNI only for funnel step 7), in parallel
+      const [scRows, fnRows, satThisBook, satLastBook, satThisUbook, satLastUbook, uniThisUbook, uniLastUbook] = await Promise.all([
+        runSql(SQL_SCORECARD),
+        runSql(SQL_FUNNEL),
+        runSatori("Across all organizations, how many successful flight bookings happened in the last 7 calendar days? Only flights, no hotels.", "all"),
+        runSatori("Across all organizations, how many successful flight bookings happened between 14 days ago and 7 days ago? Only flights, no hotels.", "all"),
+        runSatori("Across all organizations, how many distinct users had a successful flight booking in the last 7 calendar days? Only flights, no hotels.", "all"),
+        runSatori("Across all organizations, how many distinct users had a successful flight booking between 14 days ago and 7 days ago? Only flights, no hotels.", "all"),
+        runSatori("For UNI, how many distinct users had a successful flight booking in the last 7 calendar days? Only flights, no hotels.", "uni"),
+        runSatori("For UNI, how many distinct users had a successful flight booking between 14 days ago and 7 days ago? Only flights, no hotels.", "uni")
+      ]);
+      if (!scRows.length) throw new Error("Scorecard query returned no rows");
+      const r = scRows[0];
+      // Scorecard: PostHog gives searches/usearch; Satori (all 6 orgs) gives bookings/ubook (source of truth).
+      const scorecard = {
+        this_searches: Number(r.this_searches) || 0,
+        last_searches: Number(r.last_searches) || 0,
+        this_usearch:  Number(r.this_usearch) || 0,
+        last_usearch:  Number(r.last_usearch) || 0,
+        this_book:     satThisBook,
+        last_book:     satLastBook,
+        this_ubook:    satThisUbook,
+        last_ubook:    satLastUbook
+      };
+      dbg("Satori all-org bookings: this=" + satThisBook + " last=" + satLastBook + " · ubook=" + satThisUbook + "/" + satLastUbook);
+      dbg("Satori UNI ubookers (for funnel step 7): this=" + uniThisUbook + " last=" + uniLastUbook);
+      renderScorecard(scorecard);
+
+      // 2. Funnel: rebase step 7 (PayConfirm_Success) = PostHog count + Satori UNI (UNI fires upstream but not Success)
+      let bigMove = null;
+      if (fnRows.length) {
+        const funnel = fnRows.map(function(row){
+          const isSuccess = row.step === "PayConfirm_Success";
+          return {
+            step: row.step,
+            sort: Number(row.sort),
+            this_users: (Number(row.this_users) || 0) + (isSuccess ? uniThisUbook : 0),
+            last_users: (Number(row.last_users) || 0) + (isSuccess ? uniLastUbook : 0)
+          };
+        });
+        bigMove = renderFunnel(funnel);
+      }
+
+      // 3. Exec summary
+      renderExecSummary(scorecard, bigMove);
+
+      // 4. Shipped/pipeline table — pull Linear LAST so we capture any items moved to Done
+      //    while PostHog/Satori were being fetched.
+      // Wait 1.5s before the Linear pull to give engineers a buffer to flip
+      //    in-flight tickets to "Done" (sometimes triggered by deploy webhooks).
+      await new Promise(function(resolve){ setTimeout(resolve, 1500); });
+      setBanner("Refreshing shipped-to-prod from Linear (pulled last so we catch the latest)…", null);
+      let featuresFromLinear = null;
+      try {
+        // Use -P21D (3 weeks) for Done to be safe — we filter client-side anyway.
+        // Bumped limits so big pipelines aren't truncated (esp. QA + In Progress).
+        const [doneIssues, reviewIssues, qaIssues, deployIssues, progressIssues] = await Promise.all([
+          runLinearIssues("Done", 50, "-P21D"),
+          runLinearIssues("In Review", 30, null),
+          runLinearIssues("QA", 30, null),
+          runLinearIssues("To be deployed", 20, null),
+          runLinearIssues("In Progress", 30, null)
+        ]);
+        const merged = [].concat(
+          progressIssues.map(function(i){ return linearToFeature(i, "In Progress"); }),
+          reviewIssues.map(function(i){ return linearToFeature(i, "In Review"); }),
+          qaIssues.map(function(i){ return linearToFeature(i, "QA"); }),
+          deployIssues.map(function(i){ return linearToFeature(i, "To be deployed"); }),
+          doneIssues.map(function(i){ return linearToFeature(i, "Done"); })
+        );
+        featuresFromLinear = sortFeatures(merged);
+        console.log("[WBR] Linear merged:", featuresFromLinear.length, "items");
+        LIVE_FEATURES = featuresFromLinear;
+        renderFeatures(featuresFromLinear);
+      } catch (e) {
+        console.warn("[WBR] Linear refresh failed, falling back to baked snapshot:", e);
+        renderFeatures(currentFeatures());
+      }
+
+      const linearNote = featuresFromLinear
+        ? " · Linear: " + featuresFromLinear.length + " items"
+        : " · Linear: snapshot (refresh failed)";
+      setBanner("All sections refreshed at " + new Date().toLocaleString() + linearNote, "ok");
+    } catch (e) {
+      const msg = e && e.message ? e.message : String(e);
+      console.error("[WBR] Refresh failed:", e);
+      setBanner("Couldn't refresh — snapshot still shown. Error: " + msg, "err");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "Refresh from PostHog"; }
+    }
+  }
+
+  function wireButton() {
+    const btn = document.getElementById("refreshBtn");
+    if (!btn) { setTimeout(wireButton, 100); return; }
+    btn.addEventListener("click", function(e) { e.preventDefault(); dbg("refresh clicked"); refresh(); });
+    dbg("refresh button wired");
+  }
+  wireButton();
+
+  // ---------- On-load runtime probe ----------
+  (async function probeRuntime() {
+    dbg("UA: " + navigator.userAgent.slice(0, 100));
+    dbg("window.cowork present? " + (!!window.cowork));
+    if (!window.cowork) {
+      dbg("⚠ window.cowork is undefined. This file must be opened via the Cowork Artifacts panel — file:// or standalone browser won't have the runtime.");
+      const b = document.getElementById("statusBanner");
+      if (b) { b.textContent = "⚠ Refresh disabled — window.cowork not available (open via Cowork Artifacts panel, not the .html file)."; b.classList.add("warn"); }
+      return;
+    }
+    dbg("callMcpTool present? " + (typeof window.cowork.callMcpTool === "function"));
+    dbg("cowork keys: " + Object.keys(window.cowork).join(","));
+    // Tiny ping queries to confirm both MCPs respond
+    try {
+      const r1 = await callTool("mcp__979675bc-72b9-47cb-a8b6-474630c73873__execute-sql", { query: "SELECT 1 as ping LIMIT 1" });
+      const rows = parseSql(r1);
+      dbg("PostHog ping → rows=" + rows.length + " first=" + (rows[0] ? JSON.stringify(rows[0]) : "(none)"));
+    } catch (e) {
+      dbg("✗ PostHog ping failed: " + (e && e.message ? e.message : String(e)));
+    }
+    try {
+      const r2 = await callTool("mcp__16669825-e9de-44e0-9000-b9bbeb6bd58a__list_issues", { team: FLIGHTS_POD_TEAM_ID, state: "Done", limit: 1, orderBy: "updatedAt" });
+      const parts = []; extractText(r2, parts);
+      const sample = parts.join("\n").slice(0, 200);
+      dbg("Linear ping sample:", sample || "(empty)");
+    } catch (e) {
+      dbg("✗ Linear ping failed: " + (e && e.message ? e.message : String(e)));
+    }
+  })();
+
+  window.addEventListener("error", function(ev) { setBanner("UI error: " + (ev.message || "see console"), "err"); });
+  window.addEventListener("unhandledrejection", function(ev) { setBanner("Async error: " + ((ev.reason && ev.reason.message) || "see console"), "err"); });
+})();
+</script>
+</body>
+</html>
